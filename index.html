@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Londres en 20 horas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8E2D0; --paper-line: rgba(29,36,48,.14); --ink:#1D2430;
+    --navy:#16324F; --sage:#57624A; --brass:#A8783A; --brick:#8B3A2B; --paper-card:#F1ECDD;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 0 48px;}
+  header{padding:28px 20px 18px;}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:2rem;line-height:1.05;margin:0 0 6px;letter-spacing:-0.01em;}
+  .sub{font-size:.92rem;color:var(--ink);opacity:.72;margin:0 0 20px;max-width:46ch;}
+  .journey{display:flex;align-items:center;border:1px solid var(--paper-line);border-radius:2px;background:var(--paper-card);padding:14px 16px;gap:10px;overflow-x:auto;}
+  .journey .pt{flex:0 0 auto;text-align:center;min-width:64px;}
+  .journey .pt .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.02rem;}
+  .journey .pt .l{font-size:.68rem;opacity:.65;margin-top:2px;}
+  .journey .bar{flex:1;height:2px;background:var(--paper-line);min-width:18px;}
+  nav.tabs{display:flex;gap:2px;padding:4px;margin:22px 20px 0;background:var(--paper-card);border:1px solid var(--paper-line);border-radius:3px;}
+  nav.tabs button{flex:1;border:none;background:transparent;font-family:'Work Sans',sans-serif;font-weight:600;font-size:.86rem;padding:10px 4px;color:var(--ink);opacity:.55;cursor:pointer;border-radius:2px;}
+  nav.tabs button.active{background:var(--ink);color:var(--paper);opacity:1;}
+  section.panel{display:none;padding:20px 20px 0;}
+  section.panel.active{display:block;}
+  .block-head{display:flex;align-items:baseline;gap:10px;margin:26px 0 12px;}
+  .block-head:first-child{margin-top:4px;}
+  .block-head .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .block-head.noche .dot{background:var(--navy);}
+  .block-head.manana .dot{background:var(--sage);}
+  .block-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.12rem;margin:0;}
+  .block-head .range{font-size:.78rem;opacity:.6;}
+  ol.timeline{list-style:none;margin:0;padding:0;border-left:1px solid var(--paper-line);}
+  ol.timeline li{position:relative;padding:0 0 20px 22px;}
+  ol.timeline li::before{content:"";position:absolute;left:-4.5px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--ink);}
+  ol.timeline.noche li::before{background:var(--navy);}
+  ol.timeline.manana li::before{background:var(--sage);}
+  .stop-time{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;}
+  .stop-dur{font-size:.72rem;opacity:.55;margin-left:6px;}
+  .stop-name{font-weight:600;font-size:.98rem;margin:2px 0 3px;}
+  .stop-note{font-size:.86rem;opacity:.78;line-height:1.4;margin:0 0 4px;}
+  .transport-line{font-size:.78rem;opacity:.68;margin:2px 0 0;}
+  .hp-badge{display:inline-block;font-size:.66rem;font-weight:600;border:1px solid var(--brick);color:var(--brick);padding:1px 7px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+  .leg-card{border:1px solid var(--paper-line);border-radius:3px;background:var(--paper-card);padding:14px;margin-bottom:16px;}
+  .leg-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .leg-name{font-family:'Fraunces',serif;font-weight:600;font-size:1rem;}
+  .leg-time{font-size:.78rem;opacity:.6;white-space:nowrap;}
+  .leg-transport{font-size:.82rem;margin:8px 0;padding:8px 10px;background:var(--paper);border-radius:3px;border:1px dashed var(--paper-line);}
+  .leg-transport b{font-weight:600;}
+  .leg-map{width:100%;height:150px;border:0;border-radius:2px;margin-top:8px;display:block;}
+  .leg-btn{display:inline-block;margin-top:10px;font-size:.8rem;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--ink);padding:8px 12px;border-radius:2px;}
+  .audio-note{font-size:.82rem;opacity:.68;margin:0 0 16px;line-height:1.45;}
+  .audio-item{border-bottom:1px solid var(--paper-line);padding:14px 0;}
+  .audio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .audio-title{font-weight:600;font-size:.96rem;}
+  .play-btn{flex:0 0 auto;border:1px solid var(--ink);background:transparent;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:.9rem;color:var(--ink);}
+  .play-btn.playing{background:var(--brass);border-color:var(--brass);color:var(--paper);}
+  .audio-text{font-size:.84rem;opacity:.8;line-height:1.55;margin:8px 0 0;max-width:60ch;}
+  .all-btn{width:100%;margin:6px 0 22px;padding:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:'Work Sans';font-weight:600;font-size:.88rem;border-radius:2px;cursor:pointer;}
+  .voice-warn{font-size:.76rem;color:var(--brick);margin-top:10px;display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Londres en 20 horas</h1>
+    <p class="sub">Escala de Park Plaza County Hall a Heathrow. Llegada 16:05 · vuelo a México 12:45 del día siguiente.</p>
+    <div class="journey">
+      <div class="pt"><div class="t">16:05</div><div class="l">Llegada</div></div>
+      <div class="bar"></div>
+      <div class="pt"><div class="t">17:30</div><div class="l">Hotel</div></div>
+      <div class="bar"></div>
+      <div class="pt"><div class="t">22:40</div><div class="l">Descanso</div></div>
+      <div class="bar"></div>
+      <div class="pt"><div class="t">06:30</div><div class="l">Salida</div></div>
+      <div class="bar"></div>
+      <div class="pt"><div class="t">12:45</div><div class="l">Vuelo</div></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="horario" class="active">Horario</button>
+    <button data-tab="mapa">Mapa</button>
+    <button data-tab="audio">Audioguía</button>
+  </nav>
+
+  <section class="panel active" id="panel-horario">
+    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche de llegada</h2><span class="range">17:30 – 22:40</span></div>
+    <ol class="timeline noche" id="list-noche"></ol>
+    <div class="block-head manana"><div class="dot"></div><h2>Madrugada antes del vuelo</h2><span class="range">06:30 – 08:45</span></div>
+    <ol class="timeline manana" id="list-manana"></ol>
+  </section>
+
+  <section class="panel" id="panel-mapa">
+    <p class="audio-note">Cada parada tiene su mapa y un botón para abrir la ruta directa en Google Maps (a pie o en transporte público) desde el punto anterior.</p>
+    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche</h2></div>
+    <div id="map-noche"></div>
+    <div class="block-head manana"><div class="dot"></div><h2>Mañana</h2></div>
+    <div id="map-manana"></div>
+  </section>
+
+  <section class="panel" id="panel-audio">
+    <p class="audio-note">La audioguía usa la voz en español del propio teléfono, no requiere descargar nada. Toca el botón de cada parada, o usa "Reproducir bloque completo" para escucharlo seguido mientras caminan.</p>
+    <div class="voice-warn" id="voice-warn">Tu navegador no encontró una voz en español instalada. El audio saldrá en la voz predeterminada.</div>
+    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche</h2></div>
+    <button class="all-btn" data-block="noche">Reproducir bloque completo</button>
+    <div id="audio-noche"></div>
+    <div class="block-head manana"><div class="dot"></div><h2>Mañana</h2></div>
+    <button class="all-btn" data-block="manana">Reproducir bloque completo</button>
+    <div id="audio-manana"></div>
+  </section>
+</div>
+
+<script>
+const stops = [
+  {id:1,block:'noche',time:'17:30',dur:'—',name:'Salida del hotel — Park Plaza County Hall',note:'Punto de partida, junto al London Eye.',lat:51.5013,lng:-0.1197,hp:false,
+    transport:'Punto de inicio del recorrido.',
+    audio:"El Park Plaza County Hall ocupa el antiguo edificio del Consejo del Gran Londres, construido a inicios del siglo veinte en la orilla sur del Támesis, justo frente al Parlamento. Durante décadas fue el centro del gobierno de la ciudad, y hoy parte del edificio funciona como hotel mientras otra sección conserva el antiguo acuario público. Desde su entrada ya se ve el Big Ben al otro lado del puente de Westminster, así que el recorrido de esta noche prácticamente empieza con la postal más famosa de Londres de frente."},
+  {id:2,block:'noche',time:'17:35',dur:'15 min',name:'Big Ben y Casas del Parlamento',note:'Cruzando el puente de Westminster.',lat:51.5007,lng:-0.1246,hp:false,
+    transport:'A pie, cruzando el puente de Westminster, unos 7-8 minutos.',
+    audio:"El Palacio de Westminster que ven hoy no es el original: el edificio medieval se incendió casi por completo en 1834 y fue reconstruido en estilo neogótico por los arquitectos Charles Barry y Augustus Pugin, terminándose recién hacia 1870. La torre del reloj, oficialmente Elizabeth Tower desde 2012, mide unos 96 metros y en su interior cuelga la campana principal llamada Big Ben, nombre que con el tiempo la gente terminó usando para toda la torre. Dentro del palacio siguen sesionando la Cámara de los Comunes y la Cámara de los Lores, así que este sigue siendo, literalmente, el corazón del gobierno británico."},
+  {id:3,block:'noche',time:'17:50',dur:'10 min',name:'London Eye y puente de Westminster',note:'Vista de regreso hacia el hotel.',lat:51.5033,lng:-0.1196,hp:false,
+    transport:'A pie, de vuelta hacia el lado del hotel, unos 5 minutos.',
+    audio:"La noria del Milenio, conocida como London Eye, se construyó para celebrar el cambio de siglo y se pensó como una atracción temporal de apenas cinco años; su éxito hizo que se quedara para siempre. Con 135 metros de altura fue la noria más alta del mundo hasta 2006. Tiene 32 cápsulas, una por cada distrito de Londres, y en un día despejado se alcanza a ver hasta 40 kilómetros a la redonda, incluyendo Windsor. De noche, iluminada, es uno de los puntos más fotografiados de la ciudad junto al puente de Westminster."},
+  {id:4,block:'noche',time:'18:05',dur:'25 min',name:'South Bank: Southbank Centre y National Theatre',note:'Paseo junto al río.',lat:51.5058,lng:-0.1160,hp:false,
+    transport:'A pie por el Thames Path, sin cruzar puentes, unos 12 minutos hasta este tramo.',
+    audio:"Esta franja del South Bank era una zona industrial deteriorada hasta que en 1951 se eligió como sede del Festival de Gran Bretaña, un evento pensado para levantar el ánimo del país después de la guerra. El Royal Festival Hall, que sigue en pie, es el único edificio que sobrevivió de ese festival. En las décadas de 1960 y 1970 se sumaron construcciones de hormigón visto en estilo brutalista, como el National Theatre diseñado por Denys Lasdun, que en su momento fue muy criticado y hoy es apreciado como un hito de esa arquitectura. Los espacios bajo los edificios se volvieron además cuna del skateboarding en Londres desde los años setenta."},
+  {id:5,block:'noche',time:'18:35',dur:'10 min',name:'Millennium Bridge',note:'El puente que aparece en Harry Potter.',lat:51.5095,lng:-0.0985,hp:true,
+    transport:'A pie siguiendo el río hacia el este, unos 15 minutos.',
+    audio:"El Millennium Bridge es un puente colgante peatonal diseñado por el arquitecto Norman Foster junto con el estudio de ingeniería Arup y el escultor Anthony Caro, inaugurado en el año 2000. A los pocos días de abrir tuvo que cerrarse porque el paso sincronizado de miles de peatones generaba un balanceo lateral perceptible, un fenómeno de resonancia que le dio el apodo de puente tambaleante. Reabrió en 2002 ya con amortiguadores instalados. Está alineado visualmente entre la cúpula de San Pablo y la chimenea del Tate Modern. En la saga de Harry Potter aparece siendo destruido por los mortífagos en la escena inicial de El Misterio del Príncipe."},
+  {id:6,block:'noche',time:'18:50',dur:'15 min',name:'Tate Modern (exterior)',note:'Antigua central eléctrica de Bankside.',lat:51.5076,lng:-0.0994,hp:false,
+    transport:'A pie, el museo está justo en el extremo sur del puente, 2 minutos.',
+    audio:"El edificio del Tate Modern es la antigua central eléctrica de Bankside, diseñada por Giles Gilbert Scott, el mismo arquitecto detrás de la central de Battersea y de la icónica cabina telefónica roja británica. La planta funcionó quemando petróleo hasta 1981 y estuvo abandonada casi dos décadas antes de que los arquitectos suizos Herzog y de Meuron la convirtieran en museo de arte moderno, inaugurado en el año 2000. Su antigua sala de turbinas, un espacio industrial de más de 30 metros de altura, se usa hoy para instalaciones artísticas a gran escala."},
+  {id:7,block:'noche',time:'19:10',dur:'20 min',name:"St. Paul's Cathedral (exterior)",note:'Cúpula de Christopher Wren.',lat:51.5138,lng:-0.0984,hp:false,
+    transport:'A pie, cruzando de nuevo el Millennium Bridge hacia el norte, unos 8-10 minutos.',
+    audio:"La Catedral de San Pablo es la quinta que se construye en este mismo sitio; la anterior se perdió en el Gran Incendio de Londres de 1666. Su arquitecto, Christopher Wren, se inspiró parcialmente en la cúpula de San Pedro en Roma para diseñar la actual, que alcanza 111 metros de altura y incluye la famosa Galería de los Susurros, donde un murmullo pegado a la pared curva se escucha con claridad al otro lado. La imagen de su cúpula intacta rodeada de humo durante los bombardeos de 1940 se volvió uno de los símbolos de resistencia más recordados de la Segunda Guerra Mundial. En su cripta descansan, entre otros, Nelson y el Duque de Wellington."},
+  {id:8,block:'noche',time:'19:35',dur:'15 min',name:'Leadenhall Market',note:'Entrada al Callejón Diagon.',lat:51.5127,lng:-0.0836,hp:true,
+    transport:'A pie hacia el este por Cheapside y Cornhill, unos 12-15 minutos.',
+    audio:"Bajo Leadenhall Market estuvo alguna vez el foro y la basílica romana de Londinium, y como mercado lleva funcionando desde el siglo catorce. La estructura actual, con sus arcos de hierro forjado pintados en verde y granate, es obra de Horace Jones, el mismo arquitecto que después diseñaría Tower Bridge. Uno de sus pasajes, Bull's Head Passage, se usó como locación para filmar la entrada al Caldero Chorreante y al Callejón Diagon en las películas de Harry Potter, lo que lo volvió un punto de peregrinación para fans de la saga, aunque para cualquier visitante también vale la pena solo por su arquitectura victoriana."},
+  {id:9,block:'noche',time:'19:55',dur:'20 min',name:"Borough Market y Shakespeare's Globe",note:'Vista del Shard de fondo.',lat:51.5055,lng:-0.0910,hp:false,
+    transport:'A pie de regreso hacia el río y cruzando por London Bridge, unos 18-20 minutos.',
+    audio:"Borough Market tiene raíces medievales como mercado de alimentos justo fuera de las puertas de la ciudad, y se mudó a su ubicación actual en 1756. La estructura de hierro y vidrio que ven hoy es de la época victoriana. A un costado, el Shakespeare's Globe es una reconstrucción cuidadosamente fiel del teatro isabelino original, impulsada durante décadas por el actor y director estadounidense Sam Wanamaker, quien murió poco antes de que se inaugurara en 1997. Es el primer edificio con techo de paja que se autorizó en Londres desde el Gran Incendio de 1666, y sigue representando obras al aire libre como en el siglo diecisiete."},
+  {id:10,block:'noche',time:'20:20',dur:'60 min',name:'Cena en Borough Market o zona Shard',note:'Descanso para cenar.',lat:51.5050,lng:-0.0870,hp:false,
+    transport:'Sin traslado, misma zona.',
+    audio:"Esta parada es simplemente para cenar y tomar un respiro antes de la última caminata de la noche hacia Tower Bridge, con el Shard, el rascacielos más alto de Londres con 310 metros, dominando el horizonte de fondo."},
+  {id:11,block:'noche',time:'21:25',dur:'25 min',name:'Tower Bridge y Torre de Londres',note:'Iluminados de noche.',lat:51.5055,lng:-0.0754,hp:false,
+    transport:'A pie siguiendo el río hacia el este, unos 20-25 minutos desde la zona de cena.',
+    audio:"Tower Bridge se terminó en 1894 y combina un puente colgante con un tramo basculante central que todavía hoy se levanta para dejar pasar barcos grandes, un mecanismo diseñado por John Wolfe Barry y el mismo Horace Jones de Leadenhall Market. Originalmente funcionaba con motores de vapor; desde los años setenta usa electricidad, y desde 2014 tiene un piso de vidrio en las pasarelas superiores. Justo al lado, la Torre de Londres fue fundada en 1078 por Guillermo el Conquistador como fortaleza y símbolo de poder tras la conquista normanda. Con los siglos fue también palacio y prisión: ahí estuvo encerrada y fue ejecutada Ana Bolena. Hoy resguarda las joyas de la corona británica, vigiladas por los Beefeaters desde 1485, y una leyenda dice que si los cuervos que viven ahí se van, caerá el reino, por lo que siempre se mantienen al menos seis en el recinto."},
+  {id:12,block:'noche',time:'22:25',dur:'15 min',name:'Puente de Waterloo',note:'Vista nocturna del skyline, después de las 22:30.',lat:51.5074,lng:-0.1147,hp:false,
+    transport:'Autobús RV1 (ruta escénica junto al río) desde Tower Gateway hasta la parada de Waterloo, unos 20-25 minutos; alternativa en metro por Tower Hill (District/Circle) hasta Embankment y caminar.',
+    audio:"El puente de Waterloo actual se terminó de construir durante la Segunda Guerra Mundial, en buena parte con mano de obra femenina mientras los hombres estaban en el frente, por lo que se le conoce cariñosamente como el puente de las damas. Es célebre además por la canción Waterloo Sunset de The Kinks. Desde aquí se obtiene, según muchos londinenses, la mejor vista nocturna gratuita de la ciudad: hacia el este se ve la cúpula de San Pablo y los rascacielos de la City iluminados, y hacia el oeste el London Eye y el Big Ben."},
+  {id:13,block:'noche',time:'22:40',dur:'—',name:'Regreso al hotel',note:'Descanso.',lat:51.5013,lng:-0.1197,hp:false,
+    transport:'A pie desde el puente de Waterloo, unos 10 minutos.',
+    audio:"Fin del primer bloque. Toca descansar antes de la salida temprana hacia King's Cross."},
+];
+
+const stopsManana = [
+  {id:14,block:'manana',time:'06:30',dur:'10 min',name:'Check-out y desayuno rápido',note:'Salida del hotel.',lat:51.5013,lng:-0.1197,hp:false,
+    transport:'Punto de partida del segundo bloque.',
+    audio:"Última mañana en Londres antes de tomar el tren hacia el aeropuerto. Conviene llevar el equipaje ligero de mano, porque el resto del recorrido es caminando y en metro."},
+  {id:15,block:'manana',time:'06:55',dur:'20 min',name:"King's Cross — Andén 9¾",note:'Carrito y tienda de Harry Potter.',lat:51.5320,lng:-0.1233,hp:true,
+    transport:'Metro, línea Northern (dirección norte) desde Waterloo hasta King\'s Cross St Pancras, 4 paradas, unos 10-12 minutos.',
+    audio:"La estación de King's Cross, diseñada por Lewis Cubitt, abrió en 1852 con sus dos naves gemelas de tren que hoy siguen siendo reconocibles en la fachada. Los andenes nueve y diez, en la vida real bastante ordinarios, inspiraron a J. K. Rowling el andén nueve y tres cuartos por el que los magos viajan a Hogwarts; según ha contado, eligió el nombre de la estación sobre todo porque le gustaba cómo sonaba. Desde los años noventa hay un carrito medio hundido en la pared para tomarse la foto, y junto a él una tienda oficial de la saga. A un costado está St Pancras, con su fachada victoriana de ladrillo rojo y el antiguo hotel Midland Grand, que vale la pena ver de pasada aunque no forme parte de la ruta."},
+  {id:16,block:'manana',time:'07:25',dur:'15 min',name:'Covent Garden',note:'Plaza y mercado.',lat:51.5117,lng:-0.1240,hp:false,
+    transport:'Metro, línea Piccadilly (dirección Heathrow) desde King\'s Cross St Pancras, 3 paradas, unos 7 minutos. Esta misma línea los llevará después directo al aeropuerto.',
+    audio:"El nombre Covent Garden viene de convent garden, porque estas tierras pertenecían a los monjes de la Abadía de Westminster. En 1630 el arquitecto Inigo Jones trazó aquí la primera plaza planificada de Londres, inspirada en las plazas italianas. Con el tiempo se instaló un mercado de frutas y verduras que creció tanto que terminó mudándose en 1974 a Nine Elms por falta de espacio; el edificio de mercado se conservó y hoy alberga tiendas y puestos. La Royal Opera House, fundada en 1732, está a un costado, y desde los años ochenta la plaza tiene artistas callejeros con licencia oficial para actuar."},
+  {id:17,block:'manana',time:'07:40',dur:'5 min',name:'Australia House',note:'Fachada usada como Gringotts.',lat:51.5128,lng:-0.1173,hp:true,
+    transport:'A pie por el Strand, unos 5 minutos.',
+    audio:"Australia House se inauguró en 1918 por el rey Jorge V y es la misión diplomática australiana más antigua en funcionamiento continuo del mundo. Parte del mármol de su interior se trajo desde Australia. Su gran vestíbulo, el Exhibition Hall, se usó como interior y exterior del banco mágico Gringotts en Harry Potter y la Piedra Filosofal, la primera película de la saga."},
+  {id:18,block:'manana',time:'07:45',dur:'10 min',name:'Trafalgar Square',note:'Columna de Nelson.',lat:51.5080,lng:-0.1281,hp:false,
+    transport:'A pie, unos 5 minutos.',
+    audio:"Trafalgar Square se trazó en la década de 1840 para conmemorar la victoria naval británica de 1805 sobre las flotas combinadas de Francia y España. La columna central, de unos 52 metros, honra al almirante Horatio Nelson, quien murió durante esa batalla; los cuatro leones de bronce en su base se añadieron después, en 1867, fundidos en parte con cañones capturados al enemigo. La National Gallery, fundada en 1824, ocupa todo el costado norte de la plaza."},
+  {id:19,block:'manana',time:'07:55',dur:'15 min',name:'Whitehall y Downing Street',note:'Sede del gobierno.',lat:51.5034,lng:-0.1276,hp:false,
+    transport:'A pie hacia el sur por Whitehall, unos 5-8 minutos.',
+    audio:"Whitehall toma su nombre del antiguo Palacio de Whitehall, que llegó a ser el más grande de Europa hasta que se incendió en 1698; sólo sobrevivió la Banqueting House, donde por cierto fue ejecutado el rey Carlos I en 1649. Downing Street se construyó en la década de 1680 y desde 1735 el número diez es la residencia oficial del primer ministro, un regalo del rey Jorge II a Robert Walpole, considerado el primer primer ministro británico. Las rejas que hoy cierran el acceso a la calle se instalaron apenas en 1989."},
+  {id:20,block:'manana',time:'08:10',dur:'10 min',name:'Leicester Square',note:'Zona de cines y teatros.',lat:51.5104,lng:-0.1300,hp:false,
+    transport:'A pie de regreso hacia el norte, unos 12-15 minutos.',
+    audio:"Leicester Square se trazó como plaza residencial en la década de 1670 y tomó su nombre de una mansión cercana, Leicester House. Con el tiempo se convirtió en el centro de cines y teatros de Londres, y hoy es sede tradicional de los estrenos más importantes del cine británico. En sus jardines hay estatuas dedicadas a William Shakespeare y a Charlie Chaplin."},
+  {id:21,block:'manana',time:'08:25',dur:'15 min',name:'Piccadilly Circus',note:'Último punto antes del tren al aeropuerto.',lat:51.5100,lng:-0.1346,hp:false,
+    transport:'A pie, unos 5-7 minutos. De aquí sale el metro directo a Heathrow.',
+    audio:"El nombre Piccadilly viene de los picadils, unos cuellos rígidos de moda que un sastre vendía cerca de aquí en el siglo diecisiete. El cruce actual lo trazó el arquitecto John Nash en 1819. La estatua alada en el centro, conocida popularmente como Eros, en realidad representa al Ángel del Amor Filantrópico y se instaló en 1893 en memoria del filántropo conde de Shaftesbury. Los enormes anuncios luminosos que rodean la plaza llevan iluminándola desde 1908, entre los primeros del mundo en usar ese tipo de publicidad a gran escala."},
+  {id:22,block:'manana',time:'08:45',dur:'50-60 min',name:'Tren a Heathrow',note:'Llegada con margen para el vuelo de las 12:45.',lat:51.4700,lng:-0.4543,hp:false,
+    transport:'Metro, línea Piccadilly (dirección Heathrow) desde Piccadilly Circus, directo sin transbordos hasta la terminal correspondiente, unos 50-60 minutos según la terminal.',
+    audio:"La línea Piccadilly conecta el centro de Londres con Heathrow desde 1977 y es, junto con el Heathrow Express, la forma más económica de llegar al aeropuerto sin transbordos desde el West End."},
+];
+
+const allStops = stops.concat(stopsManana);
+
+function renderTimeline(list, containerId){
+  const ol = document.getElementById(containerId);
+  ol.innerHTML = list.map(s => `
+    <li>
+      <span class="stop-time">${s.time}</span><span class="stop-dur">${s.dur}</span>
+      <div class="stop-name">${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+      <p class="stop-note">${s.note}</p>
+      <p class="transport-line">${s.transport}</p>
+    </li>`).join('');
+}
+renderTimeline(stops, 'list-noche');
+renderTimeline(stopsManana, 'list-manana');
+
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+function travelMode(s){ return /Metro|Autob/i.test(s.transport) ? 'transit' : 'walking'; }
+
+function renderMapLegs(list, containerId){
+  const el = document.getElementById(containerId);
+  el.innerHTML = list.map((s,i)=>{
+    const prev = i===0 ? (list===stops ? null : stops[stops.length-1]) : list[i-1];
+    const embedSrc = `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=16&output=embed`;
+    let dirBtn = '';
+    if(prev){
+      const mode = travelMode(s);
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${prev.lat},${prev.lng}&destination=${s.lat},${s.lng}&travelmode=${mode}`;
+      dirBtn = `<a class="leg-btn" href="${url}" target="_blank" rel="noopener">Abrir ruta desde "${prev.name.split(' — ')[0].split(' (')[0]}" →</a>`;
+    }
+    return `
+    <div class="leg-card">
+      <div class="leg-top">
+        <div class="leg-name">${i+1}. ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+        <div class="leg-time">${s.time}</div>
+      </div>
+      <div class="leg-transport"><b>Cómo llegar:</b> ${s.transport}</div>
+      <iframe class="leg-map" src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      ${dirBtn}
+    </div>`;
+  }).join('');
+}
+renderMapLegs(stops, 'map-noche');
+renderMapLegs(stopsManana, 'map-manana');
+
+let voices = [];
+function loadVoices(){
+  voices = speechSynthesis.getVoices();
+  const hasEs = voices.some(v=>v.lang.toLowerCase().startsWith('es'));
+  document.getElementById('voice-warn').style.display = hasEs ? 'none' : 'block';
+}
+loadVoices();
+if('onvoiceschanged' in speechSynthesis){ speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(){ return voices.find(v=>v.lang.toLowerCase().startsWith('es')) || voices[0]; }
+function speak(text, onend){
+  const u = new SpeechSynthesisUtterance(text);
+  const v = pickVoice();
+  if(v) u.voice = v;
+  u.lang = v ? v.lang : 'es-ES';
+  u.rate = 0.98;
+  u.onend = onend || null;
+  speechSynthesis.speak(u);
+  return u;
+}
+function renderAudio(list, containerId){
+  const el = document.getElementById(containerId);
+  el.innerHTML = list.map(s => `
+    <div class="audio-item" data-id="${s.id}">
+      <div class="audio-head">
+        <div class="audio-title">${s.time} · ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+        <button class="play-btn" data-id="${s.id}">&#9654;</button>
+      </div>
+      <p class="audio-text">${s.audio}</p>
+    </div>`).join('');
+}
+renderAudio(stops, 'audio-noche');
+renderAudio(stopsManana, 'audio-manana');
+
+document.querySelectorAll('.play-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const isPlaying = btn.classList.contains('playing');
+    speechSynthesis.cancel();
+    document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+    if(isPlaying) return;
+    const stop = allStops.find(s=>s.id == btn.dataset.id);
+    btn.classList.add('playing'); btn.innerHTML = '&#10074;&#10074;';
+    speak(stop.audio, ()=>{ btn.classList.remove('playing'); btn.innerHTML='&#9654;'; });
+  });
+});
+document.querySelectorAll('.all-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    speechSynthesis.cancel();
+    document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+    const list = btn.dataset.block === 'noche' ? stops : stopsManana;
+    let i = 0;
+    function next(){
+      if(i >= list.length) return;
+      const s = list[i];
+      const pb = document.querySelector(`.play-btn[data-id="${s.id}"]`);
+      if(pb){ pb.classList.add('playing'); pb.innerHTML='&#10074;&#10074;'; }
+      speak(s.audio, ()=>{
+        if(pb){ pb.classList.remove('playing'); pb.innerHTML='&#9654;'; }
+        i++; next();
+      });
+    }
+    next();
+  });
+});
+</script>
+</body>
+</html>
