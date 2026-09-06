@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Londres en 20 horas</title>
+<title>Centro de Viajes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -14,7 +14,12 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:640px;margin:0 auto;padding:0 0 48px;}
-  header{padding:28px 20px 18px;}
+
+  .city-switch{display:flex;gap:2px;padding:4px;margin:20px 20px 0;background:var(--paper-card);border:1px solid var(--paper-line);border-radius:3px;}
+  .city-switch button{flex:1;border:none;background:transparent;font-family:'Fraunces',serif;font-weight:600;font-size:.92rem;padding:10px 4px;color:var(--ink);opacity:.55;cursor:pointer;border-radius:2px;}
+  .city-switch button.active{background:var(--ink);color:var(--paper);opacity:1;}
+
+  header{padding:20px 20px 18px;}
   h1{font-family:'Fraunces',serif;font-weight:700;font-size:2rem;line-height:1.05;margin:0 0 6px;letter-spacing:-0.01em;}
   .sub{font-size:.92rem;color:var(--ink);opacity:.72;margin:0 0 20px;max-width:46ch;}
   .journey{display:flex;align-items:center;border:1px solid var(--paper-line);border-radius:2px;background:var(--paper-card);padding:14px 16px;gap:10px;overflow-x:auto;}
@@ -62,7 +67,6 @@
   .audio-text{font-size:.84rem;opacity:.8;line-height:1.55;margin:8px 0 0;max-width:60ch;}
   .all-btn{width:100%;margin:6px 0 22px;padding:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:'Work Sans';font-weight:600;font-size:.88rem;border-radius:2px;cursor:pointer;}
   .voice-warn{font-size:.76rem;color:var(--brick);margin-top:10px;display:none;}
-
   .now-banner{border:1px solid var(--brass);background:var(--paper-card);border-radius:3px;padding:12px 14px;margin-bottom:18px;font-size:.86rem;line-height:1.4;}
   .now-banner b{font-family:'Fraunces',serif;display:block;font-size:.98rem;margin-bottom:2px;}
   .progress-wrap{margin:0 0 14px;}
@@ -82,25 +86,17 @@
   .info-block ul{margin:0;padding-left:18px;}
   .info-block a{color:var(--ink);}
   .plan-b{border-left:2px solid var(--brick);padding-left:12px;}
-
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <div class="city-switch" id="city-switch"></div>
+
   <header>
-    <h1>Londres en 20 horas</h1>
-    <p class="sub">Escala de Park Plaza County Hall a Heathrow. Llegada 16:05 · vuelo a México 12:45 del día siguiente.</p>
-    <div class="journey">
-      <div class="pt"><div class="t">16:05</div><div class="l">Llegada</div></div>
-      <div class="bar"></div>
-      <div class="pt"><div class="t">17:30</div><div class="l">Hotel</div></div>
-      <div class="bar"></div>
-      <div class="pt"><div class="t">23:20</div><div class="l">Descanso</div></div>
-      <div class="bar"></div>
-      <div class="pt"><div class="t">06:30</div><div class="l">Salida</div></div>
-      <div class="bar"></div>
-      <div class="pt"><div class="t">12:45</div><div class="l">Vuelo</div></div>
-    </div>
+    <h1 id="city-title"></h1>
+    <p class="sub" id="city-sub"></p>
+    <div class="journey" id="city-journey"></div>
   </header>
 
   <nav class="tabs">
@@ -113,236 +109,320 @@
   <section class="panel active" id="panel-horario">
     <div class="now-banner" id="now-banner">Cargando hora…</div>
 
-    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche de llegada</h2><span class="range">17:30 – 23:20</span></div>
-    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progress-noche"></div></div><div class="progress-label" id="progress-noche-label">0/13 visitadas</div></div>
+    <div class="block-head noche"><div class="dot"></div><h2 id="b1-label"></h2><span class="range" id="b1-range"></span></div>
+    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progress-noche"></div></div><div class="progress-label" id="progress-noche-label">0 visitadas</div></div>
     <ol class="timeline noche" id="list-noche"></ol>
 
-    <div class="block-head manana"><div class="dot"></div><h2>Madrugada antes del vuelo</h2><span class="range">06:30 – 08:45</span></div>
-    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progress-manana"></div></div><div class="progress-label" id="progress-manana-label">0/9 visitadas</div></div>
+    <div class="block-head manana"><div class="dot"></div><h2 id="b2-label"></h2><span class="range" id="b2-range"></span></div>
+    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progress-manana"></div></div><div class="progress-label" id="progress-manana-label">0 visitadas</div></div>
     <ol class="timeline manana" id="list-manana"></ol>
   </section>
 
   <section class="panel" id="panel-mapa">
     <p class="audio-note">Cada parada tiene su mapa y un botón para abrir la ruta directa en Google Maps (a pie o en transporte público) desde el punto anterior.</p>
-    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche</h2></div>
+    <div class="block-head noche"><div class="dot"></div><h2 id="m1-label"></h2></div>
     <div id="map-noche"></div>
-    <div class="block-head manana"><div class="dot"></div><h2>Mañana</h2></div>
+    <div class="block-head manana"><div class="dot"></div><h2 id="m2-label"></h2></div>
     <div id="map-manana"></div>
   </section>
 
   <section class="panel" id="panel-audio">
     <p class="audio-note">La audioguía usa la voz en español del propio teléfono, no requiere descargar nada. Toca el botón de cada parada, o usa "Reproducir bloque completo" para escucharlo seguido mientras caminan.</p>
     <div class="voice-warn" id="voice-warn">Tu navegador no encontró una voz en español instalada. El audio saldrá en la voz predeterminada.</div>
-    <div class="block-head noche"><div class="dot"></div><h2>Tarde y noche</h2></div>
+    <div class="block-head noche"><div class="dot"></div><h2 id="a1-label"></h2></div>
     <button class="all-btn" data-block="noche">Reproducir bloque completo</button>
     <div id="audio-noche"></div>
-    <div class="block-head manana"><div class="dot"></div><h2>Mañana</h2></div>
+    <div class="block-head manana"><div class="dot"></div><h2 id="a2-label"></h2></div>
     <button class="all-btn" data-block="manana">Reproducir bloque completo</button>
     <div id="audio-manana"></div>
   </section>
 
   <section class="panel" id="panel-info">
-    <div class="info-block">
-      <h3>Emergencias</h3>
-      <ul>
-        <li><b>999</b> (o 112) — policía, ambulancia, bomberos, para cualquier emergencia real en el Reino Unido.</li>
-        <li><b>111</b> — línea de salud no urgente del NHS si se sienten mal pero no es una emergencia.</li>
-        <li>Sección Consular, Embajada de México en el Reino Unido: 16A St George Street, Londres W1S 1FD · tel. +44 20 7499 9442 (horario limitado, mejor por correo si no es urgente).</li>
-      </ul>
-    </div>
-    <div class="info-block">
-      <h3>Cómo pagar el transporte</h3>
-      <ul>
-        <li>No necesitan comprar tarjeta Oyster: pueden tocar directamente su tarjeta de crédito/débito sin contacto o el teléfono en los lectores amarillos, tanto en el metro como en los autobuses.</li>
-        <li>El sistema aplica automáticamente un tope diario de cobro (daily cap), así que aunque hagan varios viajes cortos no pagan de más.</li>
-        <li>En el autobús no hay que validar al bajar, solo al subir; en el metro sí hay que tocar al entrar y al salir.</li>
-      </ul>
-    </div>
-    <div class="info-block">
-      <h3>Equipaje la mañana del check-out</h3>
-      <ul>
-        <li>Si no quieren cargar las maletas por Covent Garden y Trafalgar Square, hay lockers de Stasher o Radical Storage cerca de Waterloo Station, a unos minutos del hotel.</li>
-        <li>Alternativa: pregunten en la recepción del Park Plaza si guardan equipaje unas horas después del check-out; muchos hoteles lo hacen sin costo.</li>
-      </ul>
-    </div>
-    <div class="info-block">
-      <h3>Clima y qué llevar</h3>
-      <ul>
-        <li>El clima en Londres cambia rápido incluso en un mismo día; conviene revisar el pronóstico un par de días antes de viajar.</li>
-        <li>Buena regla general: capas de ropa, una chamarra ligera resistente al agua, y zapatos cómodos para caminar sobre adoquín (Covent Garden, Leadenhall Market).</li>
-        <li>Los enchufes en el Reino Unido son tipo G (distintos a México); lleven adaptador.</li>
-      </ul>
-    </div>
-    <div class="info-block plan-b">
-      <h3>Plan B — si van atrasados</h3>
-      <ul>
-        <li>Bloque noche: lo primero que se puede recortar sin perder lo esencial es South Bank (punto 4) y Leadenhall Market (punto 8); lo último que deberían sacrificar es Tower Bridge de noche, que es el cierre fuerte del día.</li>
-        <li>Bloque mañana: si van cortos de tiempo, salten Whitehall/Downing Street y Leicester Square; Platform 9¾, Covent Garden y Piccadilly Circus son los que sí conviene mantener porque están sobre la misma línea de metro hacia Heathrow.</li>
-        <li>Regla general: si a las 08:35 no están ya caminando hacia Piccadilly Circus station, suban al metro directo desde donde estén (todas las paradas de la mañana están en la línea Piccadilly) para no arriesgar el vuelo.</li>
-      </ul>
-    </div>
-    <div class="info-block plan-b">
-      <h3>Plan B — si llueve</h3>
-      <ul>
-        <li>Leadenhall Market y Covent Garden Market tienen techo, son buen refugio si arrecia la lluvia.</li>
-        <li>Si llueve fuerte en la noche, pueden cambiar el paseo final del puente de Waterloo por quedarse más tiempo cenando y volver directo al hotel.</li>
-        <li>En la mañana, la National Gallery (gratuita) en Trafalgar Square es un buen resguardo de 15-20 minutos si necesitan secarse antes de seguir a Whitehall.</li>
-      </ul>
-    </div>
+    <div id="info-content"></div>
   </section>
 
 </div>
 
 <script>
-const stops = [
-  {id:1,block:'noche',time:'17:30',dur:'—',name:'Salida del hotel — Park Plaza County Hall',note:'Punto de partida, junto al London Eye.',lat:51.5013,lng:-0.1197,hp:false,
-    transport:'Punto de inicio del recorrido.',
-    audio:"El Park Plaza County Hall ocupa el antiguo edificio del Consejo del Gran Londres, ganado en un concurso de arquitectura en 1908 por Ralph Knott y terminado hasta 1922 porque la obra se interrumpió durante la Primera Guerra Mundial. Se fue ampliando en los años treinta y de nuevo en los setenta hasta convertirse en el edificio de gobierno municipal más grande de Europa en su momento. En 1986 el gobierno de Margaret Thatcher disolvió el Consejo del Gran Londres y el edificio quedó sin uso durante años, hasta que en los noventa se reconvirtió en el complejo que ven hoy, con hotel, un acuario público y hasta una antigua sala de exhibiciones de cera. Desde su entrada ya se ve el Big Ben al otro lado del puente de Westminster, así que el recorrido de esta noche prácticamente empieza con la postal más famosa de Londres de frente."},
-  {id:2,block:'noche',time:'17:35',dur:'15 min',name:'Big Ben y Casas del Parlamento',note:'Cruzando el puente de Westminster.',lat:51.5007,lng:-0.1246,hp:false,
-    transport:'A pie, cruzando el puente de Westminster, unos 7-8 minutos.',
-    audio:"El Palacio de Westminster que ven hoy no es el original: el edificio medieval se incendió casi por completo en 1834 y fue reconstruido en estilo neogótico por los arquitectos Charles Barry y Augustus Pugin, terminándose recién hacia 1870. La torre del reloj, oficialmente Elizabeth Tower desde 2012, mide unos 96 metros y en su interior cuelga la campana principal llamada Big Ben, nombre que con el tiempo la gente terminó usando para toda la torre. Esa campana original se agrietó apenas semanas después de fundirse en 1858; en vez de refundirla, los ingenieros simplemente la giraron y usaron un martillo más ligero, y esa misma campana agrietada es la que sigue sonando hoy, con un tañido levemente distinto por la grieta. El mecanismo del reloj se ha calibrado durante más de un siglo con un método muy sencillo: se agregan o quitan monedas antiguas de un centavo sobre el péndulo para ajustar la precisión. La torre estuvo en restauración de 2017 a 2022, años en los que las campanadas casi no sonaron. Dentro del palacio siguen sesionando la Cámara de los Comunes y la Cámara de los Lores, así que este sigue siendo, literalmente, el corazón del gobierno británico."},
-  {id:3,block:'noche',time:'17:50',dur:'10 min',name:'London Eye y puente de Westminster',note:'Vista de regreso hacia el hotel.',lat:51.5033,lng:-0.1196,hp:false,
-    transport:'A pie, de vuelta hacia el lado del hotel, unos 5 minutos.',
-    audio:"La noria del Milenio, conocida como London Eye, se construyó para celebrar el cambio de siglo y se pensó como una atracción temporal de apenas cinco años; su éxito hizo que se quedara para siempre. Es una obra de ingeniería poco común: se ensambló acostada sobre el río y se levantó en varias etapas durante 1999, una maniobra que en su momento se siguió como un evento en sí mismo. Con 135 metros de altura fue la noria más alta del mundo hasta 2006, cuando la superó una en Nankín. Tiene 32 cápsulas, una por cada distrito de Londres, cada una con capacidad para unas 25 personas, y gira tan despacio y de forma tan constante que la gente sube y baja sin que la rueda llegue a detenerse por completo. En un día despejado se alcanza a ver hasta 40 kilómetros a la redonda, incluyendo el Castillo de Windsor. De noche, iluminada, es uno de los puntos más fotografiados de la ciudad junto al puente de Westminster."},
-  {id:4,block:'noche',time:'18:05',dur:'25 min',name:'South Bank: Southbank Centre y National Theatre',note:'Paseo junto al río.',lat:51.5058,lng:-0.1160,hp:false,
-    transport:'A pie por el Thames Path, sin cruzar puentes, unos 12 minutos hasta este tramo.',
-    audio:"Esta franja del South Bank era una zona industrial deteriorada hasta que en 1951 se eligió como sede del Festival de Gran Bretaña, un evento pensado para levantar el ánimo del país después de la guerra, con pabellones temporales que atrajeron a millones de visitantes en pocos meses. El Royal Festival Hall, que sigue en pie, es el único edificio que sobrevivió de ese festival y hoy es la sala de conciertos más antigua de este tipo en el Reino Unido. En las décadas de 1960 y 1970 se sumaron construcciones de hormigón visto en estilo brutalista, como la Hayward Gallery y el National Theatre diseñado por Denys Lasdun, que en su momento fueron muy criticados por su aspecto imponente y hoy se aprecian como hitos de esa arquitectura. Bajo el Southbank Centre, un espacio conocido como el Undercroft se convirtió desde los años setenta en cuna del skateboarding en Londres, y en 2014 los propios patinadores ganaron una campaña para evitar que lo cerraran, así que sigue activo hasta hoy. Los fines de semana también se instala aquí un mercado de libros usados bajo el puente de Waterloo."},
-  {id:5,block:'noche',time:'18:35',dur:'10 min',name:'Millennium Bridge',note:'El puente que aparece en Harry Potter.',lat:51.5095,lng:-0.0985,hp:true,
-    transport:'A pie siguiendo el río hacia el este, unos 15 minutos.',
-    audio:"El Millennium Bridge es un puente colgante peatonal diseñado por el arquitecto Norman Foster junto con el estudio de ingeniería Arup y el escultor Anthony Caro, inaugurado en junio del año 2000. A los pocos días de abrir tuvo que cerrarse porque el paso sincronizado de miles de peatones generaba un balanceo lateral perceptible: el paso natural de la gente coincidía casi exactamente con la frecuencia de vibración del puente, un fenómeno de resonancia que le dio el apodo de puente tambaleante. Arreglarlo con amortiguadores tomó casi dos años y costó alrededor de cinco millones de libras, financiados en parte con fondos de la lotería nacional; reabrió hasta 2002. Su trazado no es casual: está alineado a propósito para enmarcar la cúpula de San Pablo desde el extremo sur, cerca del Tate Modern. En la saga de Harry Potter aparece siendo destruido por los mortífagos en la escena inicial de El Misterio del Príncipe."},
-  {id:6,block:'noche',time:'18:50',dur:'15 min',name:'Tate Modern (exterior)',note:'Antigua central eléctrica de Bankside.',lat:51.5076,lng:-0.0994,hp:false,
-    transport:'A pie, el museo está justo en el extremo sur del puente, 2 minutos.',
-    audio:"El edificio del Tate Modern es la antigua central eléctrica de Bankside, diseñada por Giles Gilbert Scott, el mismo arquitecto detrás de la central de Battersea y de la icónica cabina telefónica roja británica. La planta funcionó quemando petróleo hasta 1981 y estuvo abandonada casi dos décadas antes de que los arquitectos suizos Herzog y de Meuron la convirtieran en museo de arte moderno, inaugurado en el año 2000. Su antigua sala de turbinas mide unos 155 metros de largo por 35 de alto, y ahí se han montado algunas de las instalaciones más comentadas del arte contemporáneo, como los cien millones de semillas de girasol de porcelana de Ai Weiwei o un enorme sol artificial envuelto en niebla creado por Olafur Eliasson. En 2016 se sumó una extensión piramidal, el edificio Blavatnik, cuya terraza panorámica tuvo que restringir sus vistas después de que varios vecinos de los departamentos de lujo cercanos se quejaran de falta de privacidad."},
-  {id:7,block:'noche',time:'19:10',dur:'20 min',name:"St. Paul's Cathedral (exterior)",note:'Cúpula de Christopher Wren.',lat:51.5138,lng:-0.0984,hp:false,
-    transport:'A pie, cruzando de nuevo el Millennium Bridge hacia el norte, unos 8-10 minutos.',
-    audio:"La Catedral de San Pablo es la quinta que se construye en este mismo sitio; la anterior se perdió en el Gran Incendio de Londres de 1666. Su arquitecto, Christopher Wren, se inspiró parcialmente en la cúpula de San Pedro en Roma para diseñar la actual, que alcanza 111 metros de altura. La cúpula en realidad es una estructura triple: una capa exterior de plomo que se ve desde fuera, una interior pintada que se ve desde el altar, y en medio un cono oculto de ladrillo que es el que realmente sostiene todo el peso, un truco de ingeniería que no se hizo público hasta mucho después. Dentro está la famosa Galería de los Susurros, donde un murmullo pegado a la pared curva se escucha con claridad al otro lado, casi 30 metros más allá. La imagen de su cúpula intacta rodeada de humo durante los bombardeos de 1940 se volvió uno de los símbolos de resistencia más recordados de la Segunda Guerra Mundial. Aquí se casaron el príncipe Carlos y Diana en 1981, y en su cripta descansan, entre otros, Nelson y el Duque de Wellington."},
-  {id:8,block:'noche',time:'19:35',dur:'15 min',name:'Leadenhall Market',note:'Entrada al Callejón Diagon.',lat:51.5127,lng:-0.0836,hp:true,
-    transport:'A pie hacia el este por Cheapside y Cornhill, unos 12-15 minutos.',
-    audio:"Bajo Leadenhall Market estuvo alguna vez el foro y la basílica romana de Londinium, y como mercado lleva funcionando desde el siglo catorce; su nombre viene de una antigua mansión con techo de plomo, lead en inglés, que se ubicaba aquí. La estructura actual, con sus arcos de hierro forjado pintados en verde y granate, es obra de Horace Jones de 1881, el mismo arquitecto que después diseñaría Tower Bridge. Durante siglos fue sobre todo mercado de carne, aves y caza; hoy conviven ahí carnicerías tradicionales con tiendas de queso, vinos y cafés. Uno de sus pasajes, Bull's Head Passage, se usó como locación para filmar la entrada al Caldero Chorreante y al Callejón Diagon en las películas de Harry Potter, lo que lo volvió un punto de peregrinación para fans de la saga, aunque para cualquier visitante también vale la pena solo por su arquitectura victoriana."},
-  {id:9,block:'noche',time:'19:55',dur:'15 min',name:"Borough Market y Shakespeare's Globe",note:'Vista del Shard de fondo.',lat:51.5055,lng:-0.0910,hp:false,
-    transport:'A pie de regreso hacia el río y cruzando por London Bridge, unos 18-20 minutos.',
-    audio:"Borough Market tiene raíces medievales como mercado de alimentos justo fuera de las puertas de la ciudad, y se mudó a su ubicación actual en 1756 cuando lo sacaron del puente de Londres por el tráfico que generaba. La estructura de hierro y vidrio que ven hoy es de la época victoriana, y en el siglo diecinueve estuvo a punto de desaparecer cuando se planeó tender una línea de ferrocarril directamente sobre él; sobrevivió gracias a una campaña de comerciantes locales. Hoy recibe a varios millones de visitantes al año. A un costado, el Shakespeare's Globe es una reconstrucción cuidadosamente fiel del teatro isabelino original, impulsada durante décadas por el actor y director estadounidense Sam Wanamaker, quien murió poco antes de que se inaugurara en 1997. Es el primer edificio con techo de paja que se autorizó en Londres desde el Gran Incendio de 1666, y como el techo es parcialmente abierto, las funciones se siguen presentando con lluvia o sol, igual que en el siglo diecisiete, incluyendo un área de entrada barata para ver la obra de pie, como hacían los espectadores más humildes de la época."},
-  {id:10,block:'noche',time:'20:35',dur:'20 min',name:'Tower Bridge y Torre de Londres',note:'Iluminados de noche; si sobra tiempo, tomen algo en la terraza del Ivy mientras espera su mesa.',lat:51.5055,lng:-0.0754,hp:false,
-    transport:'A pie siguiendo el río desde Borough Market, unos 20-25 minutos.',
-    audio:"Tower Bridge se terminó en 1894 y combina un puente colgante con un tramo basculante central que todavía hoy se levanta para dejar pasar barcos grandes, un mecanismo diseñado por John Wolfe Barry y el mismo Horace Jones de Leadenhall Market. Originalmente funcionaba con motores de vapor; desde los años setenta usa electricidad, y desde 2014 tiene un piso de vidrio en las pasarelas superiores, a más de 40 metros sobre el río. Esas pasarelas altas se construyeron pensando en que la gente cruzara mientras el puente estaba levantado, pero se volvieron un punto de encuentro de carteristas y se cerraron durante décadas, hasta que reabrieron como atracción turística en 1982. Justo al lado, la Torre de Londres fue fundada en 1078 por Guillermo el Conquistador como fortaleza y símbolo de poder tras la conquista normanda. Con los siglos fue también palacio, prisión, casa de moneda e incluso zoológico real, con leones y hasta un oso polar que llegó como regalo de Noruega en el siglo trece. En la Torre estuvo encerrada y fue ejecutada Ana Bolena. Hoy resguarda las joyas de la corona británica, incluidos diamantes tan famosos como el Koh-i-Noor y el Cullinan, vigiladas por los Beefeaters desde 1485, y una leyenda dice que si los cuervos que viven ahí se van, caerá el reino, por lo que siempre se mantienen al menos seis en el recinto con las alas recortadas."},
-  {id:11,block:'noche',time:'21:30',dur:'90 min',name:'Cena en The Ivy Tower Bridge',note:'Reservación confirmada. Shepherd\'s pie, salmón 1917 y chocolate bombe de postre, con vista al puente.',lat:51.5041,lng:-0.0770,hp:false,
-    transport:'A pie, el restaurante está justo al lado del puente, 2 minutos.',
-    audio:"The Ivy Tower Bridge es una de las sucursales de un grupo de restaurantes que arrancó en 1917 en el West End y que con el tiempo se volvió sinónimo de glamour discreto en Londres, frecuentado históricamente por actores y celebridades. Esta sede junto al río abrió como una brasserie británica moderna, con vista directa al puente. Su plato más pedido es el shepherd's pie, un pastel de carne de cordero cubierto con puré de papa gratinado, una receta que se repite en todas las sucursales del grupo como sello de la casa. También suelen tener en carta el salmón ahumado curado estilo 1917, un guiño directo al restaurante original. De postre, el más comentado es el chocolate bombe: una esfera de chocolate que se rompe en la mesa al bañarla con salsa de caramelo caliente, dejando ver el helado de vainilla y honeycomb crujiente por dentro."},
-  {id:12,block:'noche',time:'23:00',dur:'15 min',name:'Puente de Waterloo',note:'Vista nocturna del skyline, justo al salir de cenar.',lat:51.5074,lng:-0.1147,hp:false,
-    transport:'Autobús RV1 (ruta escénica junto al río) desde Tower Gateway hasta la parada de Waterloo, unos 20-25 minutos, saliendo justo después de cenar; alternativa en metro por Tower Hill (District/Circle) hasta Embankment y caminar.',
-    audio:"El puente de Waterloo toma su nombre de la batalla de 1815 en la que se derrotó a Napoleón. El primer puente en este sitio, inaugurado en 1817, llegó a ser descrito como el más hermoso de Europa, pero problemas estructurales y el hundimiento gradual de sus pilares obligaron a reemplazarlo. El puente actual se terminó de construir durante la Segunda Guerra Mundial, en buena parte con mano de obra femenina mientras los hombres estaban en el frente, por lo que se le conoce cariñosamente como el puente de las damas; a pesar de su diseño más bien sobrio para la época, hoy tiene estatus de edificio protegido. Es célebre además por la canción Waterloo Sunset de The Kinks. Desde aquí se obtiene, según muchos londinenses, la mejor vista nocturna gratuita de la ciudad: hacia el este se ve la cúpula de San Pablo y los rascacielos de la City iluminados, y hacia el oeste el London Eye y el Big Ben."},
-  {id:13,block:'noche',time:'23:20',dur:'—',name:'Regreso al hotel',note:'Descanso.',lat:51.5013,lng:-0.1197,hp:false,
-    transport:'A pie desde el puente de Waterloo, unos 10 minutos.',
-    audio:"Fin del primer bloque. Toca descansar antes de la salida temprana hacia King's Cross."},
-];
+const CITIES = {
+  ldn: {
+  key:"ldn", label:"Londres", title:"Londres en 20 horas", subtitle:"Escala de Park Plaza County Hall a Heathrow. Llegada 16:05 · vuelo a México 12:45 del día siguiente.",
+  journey:[{t:"16:05",l:"Llegada"},{t:"17:30",l:"Hotel"},{t:"23:20",l:"Descanso"},{t:"06:30",l:"Salida"},{t:"12:45",l:"Vuelo"}],
+  block1_label:"Tarde y noche de llegada", block1_range:"17:30 – 23:20", block1_start:"17:30", block1_end:"23:20",
+  block2_label:"Madrugada antes del vuelo", block2_range:"06:30 – 08:45", block2_start:"06:30", block2_end:"08:45",
+  map1_label:"Tarde y noche", map2_label:"Mañana",
+  not_started:"El bloque de tarde/noche empieza a las 17:30.", resting:"El itinerario continúa mañana a las 06:30.", finished:"Buen vuelo de regreso a México.",
+  noche:[
+    {id:1,time:"17:30",dur:"—",name:"Salida del hotel — Park Plaza County Hall",note:"Punto de partida, junto al London Eye.",lat:51.5013,lng:-0.1197,hp:false,transport:"Punto de inicio del recorrido.",audio:"El Park Plaza County Hall ocupa el antiguo edificio del Consejo del Gran Londres, ganado en un concurso de arquitectura en 1908 por Ralph Knott y terminado hasta 1922 porque la obra se interrumpió durante la Primera Guerra Mundial. Se fue ampliando en los años treinta y de nuevo en los setenta hasta convertirse en el edificio de gobierno municipal más grande de Europa en su momento. En 1986 el gobierno de Margaret Thatcher disolvió el Consejo del Gran Londres y el edificio quedó sin uso durante años, hasta que en los noventa se reconvirtió en el complejo que ven hoy, con hotel, un acuario público y hasta una antigua sala de exhibiciones de cera. Desde su entrada ya se ve el Big Ben al otro lado del puente de Westminster, así que el recorrido de esta noche prácticamente empieza con la postal más famosa de Londres de frente."},
+    {id:2,time:"17:35",dur:"15 min",name:"Big Ben y Casas del Parlamento",note:"Cruzando el puente de Westminster.",lat:51.5007,lng:-0.1246,hp:false,transport:"A pie, cruzando el puente de Westminster, unos 7-8 minutos.",audio:"El Palacio de Westminster que ven hoy no es el original: el edificio medieval se incendió casi por completo en 1834 y fue reconstruido en estilo neogótico por los arquitectos Charles Barry y Augustus Pugin, terminándose recién hacia 1870. La torre del reloj, oficialmente Elizabeth Tower desde 2012, mide unos 96 metros y en su interior cuelga la campana principal llamada Big Ben, nombre que con el tiempo la gente terminó usando para toda la torre. Esa campana original se agrietó apenas semanas después de fundirse en 1858; en vez de refundirla, los ingenieros simplemente la giraron y usaron un martillo más ligero, y esa misma campana agrietada es la que sigue sonando hoy, con un tañido levemente distinto por la grieta. El mecanismo del reloj se ha calibrado durante más de un siglo con un método muy sencillo: se agregan o quitan monedas antiguas de un centavo sobre el péndulo para ajustar la precisión. La torre estuvo en restauración de 2017 a 2022, años en los que las campanadas casi no sonaron. Dentro del palacio siguen sesionando la Cámara de los Comunes y la Cámara de los Lores, así que este sigue siendo, literalmente, el corazón del gobierno británico."},
+    {id:3,time:"17:50",dur:"10 min",name:"London Eye y puente de Westminster",note:"Vista de regreso hacia el hotel.",lat:51.5033,lng:-0.1196,hp:false,transport:"A pie, de vuelta hacia el lado del hotel, unos 5 minutos.",audio:"La noria del Milenio, conocida como London Eye, se construyó para celebrar el cambio de siglo y se pensó como una atracción temporal de apenas cinco años; su éxito hizo que se quedara para siempre. Es una obra de ingeniería poco común: se ensambló acostada sobre el río y se levantó en varias etapas durante 1999, una maniobra que en su momento se siguió como un evento en sí mismo. Con 135 metros de altura fue la noria más alta del mundo hasta 2006, cuando la superó una en Nankín. Tiene 32 cápsulas, una por cada distrito de Londres, cada una con capacidad para unas 25 personas, y gira tan despacio y de forma tan constante que la gente sube y baja sin que la rueda llegue a detenerse por completo. En un día despejado se alcanza a ver hasta 40 kilómetros a la redonda, incluyendo el Castillo de Windsor. De noche, iluminada, es uno de los puntos más fotografiados de la ciudad junto al puente de Westminster."},
+    {id:4,time:"18:05",dur:"25 min",name:"South Bank: Southbank Centre y National Theatre",note:"Paseo junto al río.",lat:51.5058,lng:-0.116,hp:false,transport:"A pie por el Thames Path, sin cruzar puentes, unos 12 minutos hasta este tramo.",audio:"Esta franja del South Bank era una zona industrial deteriorada hasta que en 1951 se eligió como sede del Festival de Gran Bretaña, un evento pensado para levantar el ánimo del país después de la guerra, con pabellones temporales que atrajeron a millones de visitantes en pocos meses. El Royal Festival Hall, que sigue en pie, es el único edificio que sobrevivió de ese festival y hoy es la sala de conciertos más antigua de este tipo en el Reino Unido. En las décadas de 1960 y 1970 se sumaron construcciones de hormigón visto en estilo brutalista, como la Hayward Gallery y el National Theatre diseñado por Denys Lasdun, que en su momento fueron muy criticados por su aspecto imponente y hoy se aprecian como hitos de esa arquitectura. Bajo el Southbank Centre, un espacio conocido como el Undercroft se convirtió desde los años setenta en cuna del skateboarding en Londres, y en 2014 los propios patinadores ganaron una campaña para evitar que lo cerraran, así que sigue activo hasta hoy. Los fines de semana también se instala aquí un mercado de libros usados bajo el puente de Waterloo."},
+    {id:5,time:"18:35",dur:"10 min",name:"Millennium Bridge",note:"El puente que aparece en Harry Potter.",lat:51.5095,lng:-0.0985,hp:true,transport:"A pie siguiendo el río hacia el este, unos 15 minutos.",audio:"El Millennium Bridge es un puente colgante peatonal diseñado por el arquitecto Norman Foster junto con el estudio de ingeniería Arup y el escultor Anthony Caro, inaugurado en junio del año 2000. A los pocos días de abrir tuvo que cerrarse porque el paso sincronizado de miles de peatones generaba un balanceo lateral perceptible: el paso natural de la gente coincidía casi exactamente con la frecuencia de vibración del puente, un fenómeno de resonancia que le dio el apodo de puente tambaleante. Arreglarlo con amortiguadores tomó casi dos años y costó alrededor de cinco millones de libras, financiados en parte con fondos de la lotería nacional; reabrió hasta 2002. Su trazado no es casual: está alineado a propósito para enmarcar la cúpula de San Pablo desde el extremo sur, cerca del Tate Modern. En la saga de Harry Potter aparece siendo destruido por los mortífagos en la escena inicial de El Misterio del Príncipe."},
+    {id:6,time:"18:50",dur:"15 min",name:"Tate Modern (exterior)",note:"Antigua central eléctrica de Bankside.",lat:51.5076,lng:-0.0994,hp:false,transport:"A pie, el museo está justo en el extremo sur del puente, 2 minutos.",audio:"El edificio del Tate Modern es la antigua central eléctrica de Bankside, diseñada por Giles Gilbert Scott, el mismo arquitecto detrás de la central de Battersea y de la icónica cabina telefónica roja británica. La planta funcionó quemando petróleo hasta 1981 y estuvo abandonada casi dos décadas antes de que los arquitectos suizos Herzog y de Meuron la convirtieran en museo de arte moderno, inaugurado en el año 2000. Su antigua sala de turbinas mide unos 155 metros de largo por 35 de alto, y ahí se han montado algunas de las instalaciones más comentadas del arte contemporáneo, como los cien millones de semillas de girasol de porcelana de Ai Weiwei o un enorme sol artificial envuelto en niebla creado por Olafur Eliasson. En 2016 se sumó una extensión piramidal, el edificio Blavatnik, cuya terraza panorámica tuvo que restringir sus vistas después de que varios vecinos de los departamentos de lujo cercanos se quejaran de falta de privacidad."},
+    {id:7,time:"19:10",dur:"20 min",name:"St. Paul's Cathedral (exterior)",note:"Cúpula de Christopher Wren.",lat:51.5138,lng:-0.0984,hp:false,transport:"A pie, cruzando de nuevo el Millennium Bridge hacia el norte, unos 8-10 minutos.",audio:"La Catedral de San Pablo es la quinta que se construye en este mismo sitio; la anterior se perdió en el Gran Incendio de Londres de 1666. Su arquitecto, Christopher Wren, se inspiró parcialmente en la cúpula de San Pedro en Roma para diseñar la actual, que alcanza 111 metros de altura. La cúpula en realidad es una estructura triple: una capa exterior de plomo que se ve desde fuera, una interior pintada que se ve desde el altar, y en medio un cono oculto de ladrillo que es el que realmente sostiene todo el peso, un truco de ingeniería que no se hizo público hasta mucho después. Dentro está la famosa Galería de los Susurros, donde un murmullo pegado a la pared curva se escucha con claridad al otro lado, casi 30 metros más allá. La imagen de su cúpula intacta rodeada de humo durante los bombardeos de 1940 se volvió uno de los símbolos de resistencia más recordados de la Segunda Guerra Mundial. Aquí se casaron el príncipe Carlos y Diana en 1981, y en su cripta descansan, entre otros, Nelson y el Duque de Wellington."},
+    {id:8,time:"19:35",dur:"15 min",name:"Leadenhall Market",note:"Entrada al Callejón Diagon.",lat:51.5127,lng:-0.0836,hp:true,transport:"A pie hacia el este por Cheapside y Cornhill, unos 12-15 minutos.",audio:"Bajo Leadenhall Market estuvo alguna vez el foro y la basílica romana de Londinium, y como mercado lleva funcionando desde el siglo catorce; su nombre viene de una antigua mansión con techo de plomo, lead en inglés, que se ubicaba aquí. La estructura actual, con sus arcos de hierro forjado pintados en verde y granate, es obra de Horace Jones de 1881, el mismo arquitecto que después diseñaría Tower Bridge. Durante siglos fue sobre todo mercado de carne, aves y caza; hoy conviven ahí carnicerías tradicionales con tiendas de queso, vinos y cafés. Uno de sus pasajes, Bull's Head Passage, se usó como locación para filmar la entrada al Caldero Chorreante y al Callejón Diagon en las películas de Harry Potter, lo que lo volvió un punto de peregrinación para fans de la saga, aunque para cualquier visitante también vale la pena solo por su arquitectura victoriana."},
+    {id:9,time:"19:55",dur:"15 min",name:"Borough Market y Shakespeare's Globe",note:"Vista del Shard de fondo.",lat:51.5055,lng:-0.091,hp:false,transport:"A pie de regreso hacia el río y cruzando por London Bridge, unos 18-20 minutos.",audio:"Borough Market tiene raíces medievales como mercado de alimentos justo fuera de las puertas de la ciudad, y se mudó a su ubicación actual en 1756 cuando lo sacaron del puente de Londres por el tráfico que generaba. La estructura de hierro y vidrio que ven hoy es de la época victoriana, y en el siglo diecinueve estuvo a punto de desaparecer cuando se planeó tender una línea de ferrocarril directamente sobre él; sobrevivió gracias a una campaña de comerciantes locales. Hoy recibe a varios millones de visitantes al año. A un costado, el Shakespeare's Globe es una reconstrucción cuidadosamente fiel del teatro isabelino original, impulsada durante décadas por el actor y director estadounidense Sam Wanamaker, quien murió poco antes de que se inaugurara en 1997. Es el primer edificio con techo de paja que se autorizó en Londres desde el Gran Incendio de 1666, y como el techo es parcialmente abierto, las funciones se siguen presentando con lluvia o sol, igual que en el siglo diecisiete, incluyendo un área de entrada barata para ver la obra de pie, como hacían los espectadores más humildes de la época."},
+    {id:10,time:"20:35",dur:"20 min",name:"Tower Bridge y Torre de Londres",note:"Iluminados de noche; si sobra tiempo, tomen algo en la terraza del Ivy mientras espera su mesa.",lat:51.5055,lng:-0.0754,hp:false,transport:"A pie siguiendo el río desde Borough Market, unos 20-25 minutos.",audio:"Tower Bridge se terminó en 1894 y combina un puente colgante con un tramo basculante central que todavía hoy se levanta para dejar pasar barcos grandes, un mecanismo diseñado por John Wolfe Barry y el mismo Horace Jones de Leadenhall Market. Originalmente funcionaba con motores de vapor; desde los años setenta usa electricidad, y desde 2014 tiene un piso de vidrio en las pasarelas superiores, a más de 40 metros sobre el río. Esas pasarelas altas se construyeron pensando en que la gente cruzara mientras el puente estaba levantado, pero se volvieron un punto de encuentro de carteristas y se cerraron durante décadas, hasta que reabrieron como atracción turística en 1982. Justo al lado, la Torre de Londres fue fundada en 1078 por Guillermo el Conquistador como fortaleza y símbolo de poder tras la conquista normanda. Con los siglos fue también palacio, prisión, casa de moneda e incluso zoológico real, con leones y hasta un oso polar que llegó como regalo de Noruega en el siglo trece. En la Torre estuvo encerrada y fue ejecutada Ana Bolena. Hoy resguarda las joyas de la corona británica, incluidos diamantes tan famosos como el Koh-i-Noor y el Cullinan, vigiladas por los Beefeaters desde 1485, y una leyenda dice que si los cuervos que viven ahí se van, caerá el reino, por lo que siempre se mantienen al menos seis en el recinto con las alas recortadas."},
+    {id:11,time:"21:30",dur:"90 min",name:"Cena en The Ivy Tower Bridge",note:"Reservación confirmada. Shepherd's pie, salmón 1917 y chocolate bombe de postre, con vista al puente.",lat:51.5041,lng:-0.077,hp:false,transport:"A pie, el restaurante está justo al lado del puente, 2 minutos.",audio:"The Ivy Tower Bridge es una de las sucursales de un grupo de restaurantes que arrancó en 1917 en el West End y que con el tiempo se volvió sinónimo de glamour discreto en Londres, frecuentado históricamente por actores y celebridades. Esta sede junto al río abrió como una brasserie británica moderna, con vista directa al puente. Su plato más pedido es el shepherd's pie, un pastel de carne de cordero cubierto con puré de papa gratinado, una receta que se repite en todas las sucursales del grupo como sello de la casa. También suelen tener en carta el salmón ahumado curado estilo 1917, un guiño directo al restaurante original. De postre, el más comentado es el chocolate bombe: una esfera de chocolate que se rompe en la mesa al bañarla con salsa de caramelo caliente, dejando ver el helado de vainilla y honeycomb crujiente por dentro."},
+    {id:12,time:"23:00",dur:"15 min",name:"Puente de Waterloo",note:"Vista nocturna del skyline, justo al salir de cenar.",lat:51.5074,lng:-0.1147,hp:false,transport:"Autobús RV1 (ruta escénica junto al río) desde Tower Gateway hasta la parada de Waterloo, unos 20-25 minutos, saliendo justo después de cenar; alternativa en metro por Tower Hill (District/Circle) hasta Embankment y caminar.",audio:"El puente de Waterloo toma su nombre de la batalla de 1815 en la que se derrotó a Napoleón. El primer puente en este sitio, inaugurado en 1817, llegó a ser descrito como el más hermoso de Europa, pero problemas estructurales y el hundimiento gradual de sus pilares obligaron a reemplazarlo. El puente actual se terminó de construir durante la Segunda Guerra Mundial, en buena parte con mano de obra femenina mientras los hombres estaban en el frente, por lo que se le conoce cariñosamente como el puente de las damas; a pesar de su diseño más bien sobrio para la época, hoy tiene estatus de edificio protegido. Es célebre además por la canción Waterloo Sunset de The Kinks. Desde aquí se obtiene, según muchos londinenses, la mejor vista nocturna gratuita de la ciudad: hacia el este se ve la cúpula de San Pablo y los rascacielos de la City iluminados, y hacia el oeste el London Eye y el Big Ben."},
+    {id:13,time:"23:20",dur:"—",name:"Regreso al hotel",note:"Descanso.",lat:51.5013,lng:-0.1197,hp:false,transport:"A pie desde el puente de Waterloo, unos 10 minutos.",audio:"Fin del primer bloque. Toca descansar antes de la salida temprana hacia King's Cross."}
+  ],
+  manana:[
+    {id:14,time:"06:30",dur:"10 min",name:"Check-out y desayuno rápido",note:"Salida del hotel.",lat:51.5013,lng:-0.1197,hp:false,transport:"Punto de partida del segundo bloque.",audio:"Última mañana en Londres antes de tomar el tren hacia el aeropuerto. Conviene llevar el equipaje ligero de mano, porque el resto del recorrido es caminando y en metro."},
+    {id:15,time:"06:55",dur:"20 min",name:"King's Cross — Andén 9¾",note:"Carrito y tienda de Harry Potter.",lat:51.532,lng:-0.1233,hp:true,transport:"Metro, línea Northern (dirección norte) desde Waterloo hasta King's Cross St Pancras, 4 paradas, unos 10-12 minutos.",audio:"La estación de King's Cross, diseñada por Lewis Cubitt, abrió en 1852 con sus dos naves gemelas de tren que hoy siguen siendo reconocibles en la fachada. El nombre de la zona viene de un monumento a Jorge IV que existió en este cruce de calles décadas antes de construirse la estación, y que se derribó por impopular en 1845. Los andenes nueve y diez, en la vida real bastante ordinarios, inspiraron a J. K. Rowling el andén nueve y tres cuartos por el que los magos viajan a Hogwarts; según ha contado, eligió el nombre de la estación sobre todo porque le gustaba cómo sonaba. Desde los años noventa hay un carrito medio hundido en la pared para tomarse la foto, y junto a él una tienda oficial de la saga. A un costado está St Pancras, con su fachada victoriana de ladrillo rojo y el antiguo hotel Midland Grand; desde 2007 esa misma estación es la terminal de los trenes Eurostar que cruzan por el túnel del Canal de la Mancha hacia París y Bruselas."},
+    {id:16,time:"07:25",dur:"15 min",name:"Covent Garden",note:"Plaza y mercado.",lat:51.5117,lng:-0.124,hp:false,transport:"Metro, línea Piccadilly (dirección Heathrow) desde King's Cross St Pancras, 3 paradas, unos 7 minutos. Esta misma línea los llevará después directo al aeropuerto.",audio:"El nombre Covent Garden viene de convent garden, porque estas tierras pertenecían a los monjes de la Abadía de Westminster. En 1630 el arquitecto Inigo Jones trazó aquí la primera plaza planificada de Londres, inspirada en las plazas italianas que había visto durante sus viajes. Con el tiempo se instaló un mercado de frutas y verduras que creció tanto que terminó mudándose en 1974 a Nine Elms por falta de espacio; el edificio de mercado se conservó y hoy alberga tiendas y puestos bajo el mismo techo de hierro y vidrio del siglo diecinueve. La Royal Opera House, fundada en 1732, está a un costado, y desde los años ochenta la plaza tiene artistas callejeros con licencia oficial para actuar, una tradición de teatro callejero que en Inglaterra se documenta en esta misma plaza desde el siglo diecisiete, con los primeros espectáculos de títeres registrados en el país. Ahí cerca también está el Museo del Transporte de Londres, con vagones y autobuses históricos del metro más antiguo del mundo."},
+    {id:17,time:"07:40",dur:"5 min",name:"Australia House",note:"Fachada usada como Gringotts.",lat:51.5128,lng:-0.1173,hp:true,transport:"A pie por el Strand, unos 5 minutos.",audio:"Australia House se inauguró en 1918 por el rey Jorge V y es la misión diplomática australiana más antigua en funcionamiento continuo del mundo. Su construcción tomó ocho años, retrasada en parte por la Primera Guerra Mundial, y su fachada de estilo clásico está decorada con esculturas que representan a los distintos estados australianos. Buena parte del mármol de su interior se trajo desde Australia, algo poco común para un edificio de esa época en Londres. Su gran vestíbulo, el Exhibition Hall, con columnas y candelabros imponentes, se usó como interior y exterior del banco mágico Gringotts en Harry Potter y la Piedra Filosofal, la primera película de la saga, y sigue siendo de las locaciones de Harry Potter más visitadas de Londres precisamente porque, a diferencia de otras, se puede ver desde la calle sin pagar entrada."},
+    {id:18,time:"07:45",dur:"10 min",name:"Trafalgar Square",note:"Columna de Nelson.",lat:51.508,lng:-0.1281,hp:false,transport:"A pie, unos 5 minutos.",audio:"Trafalgar Square se trazó en la década de 1840 para conmemorar la victoria naval británica de 1805 sobre las flotas combinadas de Francia y España, en la que Napoleón perdió cualquier posibilidad de invadir Inglaterra por mar. La columna central, de unos 52 metros, honra al almirante Horatio Nelson, quien murió durante esa batalla; los cuatro leones de bronce en su base se añadieron después, en 1867, fundidos en parte con cañones capturados al enemigo. La National Gallery, fundada en 1824, ocupa todo el costado norte de la plaza. Durante buena parte del siglo veinte la plaza fue famosa por sus cientos de palomas, que los vendedores locales invitaban a alimentar, hasta que en 2003 se prohibió por el daño que las heces causaban a la piedra de los monumentos. Desde 1999 uno de sus cuatro pedestales, conocido como el Cuarto Pedestal, se reserva para encargos rotativos de arte contemporáneo en lugar de una estatua fija, algo poco común en un espacio tan histórico."},
+    {id:19,time:"07:55",dur:"15 min",name:"Whitehall y Downing Street",note:"Sede del gobierno.",lat:51.5034,lng:-0.1276,hp:false,transport:"A pie hacia el sur por Whitehall, unos 5-8 minutos.",audio:"Whitehall toma su nombre del antiguo Palacio de Whitehall, que llegó a ser el más grande de Europa, con más de mil quinientas habitaciones, hasta que se incendió casi por completo en 1698; sólo sobrevivió la Banqueting House, donde por cierto fue ejecutado el rey Carlos I en 1649, en un cadalso construido justo frente al edificio cuyo techo él mismo había mandado decorar con pinturas de Rubens años antes. Downing Street se construyó en la década de 1680 y desde 1735 el número diez es la residencia oficial del primer ministro, un regalo del rey Jorge II a Robert Walpole, considerado el primer primer ministro británico aunque el título no existía formalmente en su época. Las rejas que hoy cierran el acceso a la calle se instalaron apenas en 1989, por motivos de seguridad, así que ya no se puede caminar frente a la puerta como antes. Un poco más adelante está el Cenotafio, el monumento nacional a los caídos en las dos guerras mundiales, donde cada noviembre se realiza la ceremonia oficial de recuerdo."},
+    {id:20,time:"08:10",dur:"10 min",name:"Leicester Square",note:"Zona de cines y teatros.",lat:51.5104,lng:-0.13,hp:false,transport:"A pie de regreso hacia el norte, unos 12-15 minutos.",audio:"Leicester Square se trazó como plaza residencial en la década de 1670 y tomó su nombre de una mansión cercana, Leicester House. En el siglo dieciocho tuvo cierta fama como escenario de duelos entre caballeros; con el tiempo se convirtió en el centro de cines y teatros de Londres, y hoy es sede tradicional de los estrenos más importantes del cine británico, con alfombras rojas frente a sus salas Art Decó. En sus jardines hay estatuas dedicadas a William Shakespeare y a Charlie Chaplin, y en una esquina está la famosa caseta de TKTS, donde se venden boletos de teatro del West End con descuento el mismo día de la función."},
+    {id:21,time:"08:25",dur:"15 min",name:"Piccadilly Circus",note:"Último punto antes del tren al aeropuerto.",lat:51.51,lng:-0.1346,hp:false,transport:"A pie, unos 5-7 minutos. De aquí sale el metro directo a Heathrow.",audio:"El nombre Piccadilly viene de los picadils, unos cuellos rígidos de moda que un sastre llamado Robert Baker vendía cerca de aquí en el siglo diecisiete, y que le dieron tanto dinero que su casa terminó apodándose burlonamente Piccadilly Hall. El cruce actual lo trazó el arquitecto John Nash en 1819 como parte de una reforma urbana mayor que también incluyó Regent Street. La estatua alada en el centro, conocida popularmente como Eros, en realidad representa a su hermano Anteros, el Ángel del Amor Filantrópico o desinteresado, y se instaló en 1893 en memoria del filántropo conde de Shaftesbury, conocido por impulsar leyes que protegían a niños trabajadores; fue una de las primeras estatuas del mundo fundidas en aluminio, un material entonces novedoso y caro. Los enormes anuncios luminosos que rodean la plaza llevan iluminándola desde 1908, entre los primeros del mundo en usar ese tipo de publicidad a gran escala, y hoy son enteramente digitales."},
+    {id:22,time:"08:45",dur:"50-60 min",name:"Tren a Heathrow",note:"Llegada con margen para el vuelo de las 12:45.",lat:51.47,lng:-0.4543,hp:false,transport:"Metro, línea Piccadilly (dirección Heathrow) desde Piccadilly Circus, directo sin transbordos hasta la terminal correspondiente, unos 50-60 minutos según la terminal.",audio:"La línea Piccadilly conecta el centro de Londres con Heathrow desde 1977 y es, junto con el Heathrow Express, la forma más económica de llegar al aeropuerto sin transbordos desde el West End; el tren se detiene en varias terminales, así que conviene confirmar en Google Maps o en las pantallas de la estación cuál corresponde a su vuelo antes de subir."}
+  ],
+  info:[
+    {title:"Emergencias",planb:false,items:["<b>999</b> (o 112) — policía, ambulancia, bomberos, para cualquier emergencia real en el Reino Unido.","<b>111</b> — línea de salud no urgente del NHS si se sienten mal pero no es una emergencia.","Sección Consular, Embajada de México en el Reino Unido: 16A St George Street, Londres W1S 1FD · tel. +44 20 7499 9442 (horario limitado, mejor por correo si no es urgente)."]},
+    {title:"Cómo pagar el transporte",planb:false,items:["No necesitan comprar tarjeta Oyster: pueden tocar directamente su tarjeta de crédito/débito sin contacto o el teléfono en los lectores amarillos, tanto en el metro como en los autobuses.","El sistema aplica automáticamente un tope diario de cobro (daily cap), así que aunque hagan varios viajes cortos no pagan de más.","En el autobús no hay que validar al bajar, solo al subir; en el metro sí hay que tocar al entrar y al salir."]},
+    {title:"Equipaje la mañana del check-out",planb:false,items:["Si no quieren cargar las maletas por Covent Garden y Trafalgar Square, hay lockers de Stasher o Radical Storage cerca de Waterloo Station, a unos minutos del hotel.","Alternativa: pregunten en la recepción del Park Plaza si guardan equipaje unas horas después del check-out; muchos hoteles lo hacen sin costo."]},
+    {title:"Clima y qué llevar",planb:false,items:["El clima en Londres cambia rápido incluso en un mismo día; conviene revisar el pronóstico un par de días antes de viajar.","Buena regla general: capas de ropa, una chamarra ligera resistente al agua, y zapatos cómodos para caminar sobre adoquín (Covent Garden, Leadenhall Market).","Los enchufes en el Reino Unido son tipo G (distintos a México); lleven adaptador."]},
+    {title:"Plan B — si van atrasados",planb:true,items:["Bloque noche: lo primero que se puede recortar sin perder lo esencial es South Bank (punto 4) y Leadenhall Market (punto 8); lo último que deberían sacrificar es Tower Bridge de noche, que es el cierre fuerte del día.","Bloque mañana: si van cortos de tiempo, salten Whitehall/Downing Street y Leicester Square; Platform 9¾, Covent Garden y Piccadilly Circus son los que sí conviene mantener porque están sobre la misma línea de metro hacia Heathrow.","Regla general: si a las 08:35 no están ya caminando hacia Piccadilly Circus station, suban al metro directo desde donde estén (todas las paradas de la mañana están en la línea Piccadilly) para no arriesgar el vuelo."]},
+    {title:"Plan B — si llueve",planb:true,items:["Leadenhall Market y Covent Garden Market tienen techo, son buen refugio si arrecia la lluvia.","Si llueve fuerte en la noche, pueden cambiar el paseo final del puente de Waterloo por quedarse más tiempo cenando y volver directo al hotel.","En la mañana, la National Gallery (gratuita) en Trafalgar Square es un buen resguardo de 15-20 minutos si necesitan secarse antes de seguir a Whitehall."]}
+  ]
+},
+  par: {
+  key:"par", label:"París", title:"París en 21h35", subtitle:"De CDG al Hotel Relais Bosquet y de regreso. Llegada 13:25 (7 nov) · vuelo a Nairobi 11:00 (8 nov).",
+  journey:[{t:"13:25",l:"Llegada"},{t:"15:15",l:"Hotel"},{t:"22:30",l:"Descanso"},{t:"07:00",l:"Desayuno"},{t:"11:00",l:"Vuelo"}],
+  block1_label:"Tarde y noche en París", block1_range:"15:15 – 22:30", block1_start:"15:15", block1_end:"22:30",
+  block2_label:"Regreso al aeropuerto", block2_range:"06:45 – 08:15", block2_start:"06:45", block2_end:"08:15",
+  map1_label:"Tarde y noche", map2_label:"Regreso al aeropuerto",
+  not_started:"El paseo por París empieza sobre las 15:15, al llegar al hotel.", resting:"Toca dormir — el desayuno en el hotel es a las 7:00.", finished:"Buen vuelo hacia Nairobi.",
+  noche:[
+    {id:1,time:"15:15",dur:"15 min",name:"Llegada al hotel — Hotel Relais Bosquet by Malone",note:"Con vista a la Torre Eiffel desde la habitación.",lat:48.8562,lng:2.3052,hp:false,transport:"RER B + RER C (o taxi/Uber directo) desde CDG, unos 50-60 minutos.",audio:"El Hotel Relais Bosquet está en el séptimo distrito, en Rue du Champ de Mars, a unos pasos de Rue Cler, una de las calles peatonales de mercado más queridas por los propios parisinos, con quesería, panadería y frutería tradicionales abiertas todo el día. La zona es residencial y tranquila comparada con el centro turístico, pero está a diez minutos caminando de la Torre Eiffel, lo cual la vuelve una de las bases más convenientes de la ciudad para una escala corta como esta."},
+    {id:2,time:"15:30",dur:"15 min",name:"Champ de Mars",note:"El parque justo bajo la Torre Eiffel.",lat:48.8558,lng:2.2984,hp:false,transport:"A pie desde el hotel, 3-4 minutos.",audio:"El Champ de Mars, campo de Marte en honor al dios romano de la guerra, fue durante el siglo dieciocho el campo de entrenamiento militar de la Escuela Militar que está en uno de sus extremos. En 1790, apenas un año después de la Revolución, aquí se celebró la Fiesta de la Federación, una jura masiva de la nueva Constitución con cientos de miles de personas. Con el tiempo se convirtió en el jardín de las Exposiciones Universales de París, y es justamente para una de esas exposiciones, la de 1889, que se construyó la Torre Eiffel en su extremo norte."},
+    {id:3,time:"15:50",dur:"35 min",name:"Torre Eiffel (base, exterior)",note:"Construida para la Exposición Universal de 1889.",lat:48.8584,lng:2.2945,hp:false,transport:"A pie cruzando el parque, unos 10 minutos.",audio:"La Torre Eiffel se construyó como arco de entrada para la Exposición Universal de 1889, que además celebraba el centenario de la Revolución Francesa. La diseñó el ingeniero Gustave Eiffel junto con su equipo, y en su momento generó una fuerte polémica: un grupo de artistas e intelectuales parisinos firmó una carta pública llamándola monstruosa. El permiso de construcción era temporal, apenas veinte años, y estuvo a punto de demolerse en 1909; se salvó porque resultó perfecta como antena de telecomunicaciones, un uso que le dio Eiffel mismo para justificar conservarla. Mide 330 metros con las antenas, se repinta por completo cada siete años con unas sesenta toneladas de pintura, y cada noche, desde que oscurece hasta que cierra, destella con miles de luces doradas durante cinco minutos al inicio de cada hora."},
+    {id:4,time:"16:30",dur:"30 min",name:"Trocadéro",note:"La vista clásica de postal de la torre.",lat:48.8628,lng:2.2876,hp:false,transport:"A pie cruzando el Pont d'Iéna, unos 15-18 minutos.",audio:"La explanada del Trocadéro y el Palais de Chaillot que la enmarca se construyeron para la Exposición Universal de 1937, sobre el sitio de un palacio anterior levantado en 1878. El nombre viene de la Batalla del Trocadero de 1823, en la que tropas francesas tomaron un fuerte español cerca de Cádiz. Desde esta plataforma, ligeramente elevada sobre el río, se obtiene la vista más fotografiada de la Torre Eiffel de frente, con las fuentes del Trocadéro en primer plano; de noche, cuando la torre empieza a destellar cada hora, este es uno de los mejores puntos de la ciudad para verlo."},
+    {id:5,time:"17:05",dur:"20 min",name:"Arco del Triunfo",note:"Encargado por Napoleón tras la batalla de Austerlitz.",lat:48.8738,lng:2.295,hp:false,transport:"Metro línea 6 (dirección Nation) desde Trocadéro hasta Charles de Gaulle–Étoile, 2 paradas, unos 8-10 minutos; o caminando por Av. Kléber, unos 20 minutos.",audio:"Napoleón encargó el Arco del Triunfo en 1806 para celebrar su victoria en Austerlitz, pero no llegó a verlo terminado: se completó hasta 1836, quince años después de su muerte en el exilio. Doce avenidas salen de la plaza en forma de estrella, un trazado urbano tan preciso que da nombre al barrio, Étoile. Bajo el arco descansa desde 1921 la Tumba del Soldado Desconocido, con una llama eterna que se reaviva cada tarde a las 18:30 en una ceremonia que no se ha interrumpido ni durante la ocupación alemana en la Segunda Guerra Mundial. Los relieves de la fachada, entre ellos La Marsellesa de François Rude, están dedicados a las campañas militares francesas."},
+    {id:6,time:"17:35",dur:"40 min",name:"Avenida de los Campos Elíseos",note:"Paseo hasta la Place de la Concorde.",lat:48.8698,lng:2.3078,hp:false,transport:"A pie bajando la avenida desde el Arco, unos 35-40 minutos a paso tranquilo.",audio:"Los Campos Elíseos toman su nombre de los Campos Elíseos griegos, el paraíso de los héroes en la mitología clásica. Hasta el siglo diecisiete esto era básicamente pantano y huertas; se fue transformando en paseo arbolado y, ya en el siglo diecinueve, en la avenida comercial y de desfiles que es hoy. Cada julio es aquí donde termina el Tour de Francia, y cada 14 de julio baja por esta misma avenida el desfile militar del Día de la Bastilla. Los primeros tramos, cerca del Arco, son más de tiendas de lujo y salas de cine; conforme se acercan a la Concordia, la avenida se abre hacia los jardines."},
+    {id:7,time:"18:20",dur:"20 min",name:"Place de la Concorde",note:"El obelisco de Luxor, de 3,300 años.",lat:48.8656,lng:2.3212,hp:false,transport:"A pie, unos 5 minutos.",audio:"La Place de la Concorde se diseñó en 1755 como plaza real, pero durante la Revolución Francesa se instaló aquí la guillotina y se convirtió en el escenario de las ejecuciones más famosas de la época, incluidas las de Luis XVI y María Antonieta. Después del Terror se le cambió el nombre a Concordia, en un gesto de reconciliación nacional. El obelisco en el centro tiene unos 3,300 años, viene del Templo de Luxor en Egipto y fue un regalo del gobernador otomano de Egipto a Francia en 1830, transportado en un barco construido especialmente para la ocasión; en su base hay diagramas que explican, en francés, cómo se logró trasladarlo hasta aquí."},
+    {id:8,time:"18:45",dur:"15 min",name:"Iglesia de la Madeleine",note:"Fachada de templo griego, encargo de Napoleón.",lat:48.87,lng:2.3246,hp:false,transport:"A pie, unos 10 minutos.",audio:"La Madeleine iba a ser, según el plan original de Napoleón, un templo dedicado a la gloria de su ejército, con columnas corintias que imitan un templo griego clásico; nunca llegó a inaugurarse con ese uso y terminó consagrada como iglesia católica en 1842. Su eje está alineado a propósito con el Palacio Borbón, sede de la Asamblea Nacional al otro lado del río, así que si se paran justo frente a sus escalones y miran hacia el sur, verán ese edificio prácticamente enmarcado al fondo, con la Concordia de por medio."},
+    {id:9,time:"19:05",dur:"15 min",name:"Palais Garnier",note:"La Ópera de París, iluminada de noche.",lat:48.872,lng:2.3316,hp:false,transport:"A pie, unos 10 minutos.",audio:"El Palais Garnier lo diseñó el arquitecto Charles Garnier, ganador de un concurso, e inauguró en 1875 como la nueva sede de la Ópera de París en pleno esplendor del Segundo Imperio. Bajo el edificio hay una cisterna subterránea de agua, construida originalmente para regular la presión del terreno pantanoso; esa cisterna, y la leyenda de un fantasma habitando el teatro, inspiraron a Gaston Leroux la novela El Fantasma de la Ópera. El techo de la sala principal, pintado originalmente en un estilo clásico, se cubrió en 1964 con un mural encargado al pintor Marc Chagall, una mezcla curiosa de lo tradicional dorado del edificio con el arte moderno en colores."},
+    {id:10,time:"19:20",dur:"15 min",name:"Jardín del Palais-Royal",note:"Cierra a las 20:30 en noviembre, por eso va antes de la cena.",lat:48.865,lng:2.3378,hp:false,transport:"A pie, unos 10 minutos.",audio:"El Palais-Royal se construyó en la década de 1630 para el Cardenal Richelieu y con el tiempo pasó a la familia real de Orleans. Su jardín, rodeado de arcadas, fue durante el siglo dieciocho un espacio semipúblico lleno de cafés, casas de juego y libreros, y es precisamente aquí, subido a una mesa de café en 1789, donde el periodista Camille Desmoulins dio el discurso que empujó a la multitud a tomar las armas y marchar hacia la Bastilla dos días después. Hoy el patio de honor está ocupado por una instalación de arte contemporáneo de 1986, las columnas rayadas en blanco y negro de Daniel Buren, que en su momento causaron un escándalo enorme por instalarse en un entorno tan clásico y que hoy son parte querida del paisaje parisino."},
+    {id:11,time:"19:40",dur:"15 min",name:"Pirámide del Louvre",note:"Entrada del museo, iluminada de noche.",lat:48.861,lng:2.3359,hp:false,transport:"A pie, 5 minutos, está prácticamente enfrente del Palais-Royal.",audio:"La pirámide de vidrio del Louvre la diseñó el arquitecto chino-estadounidense I. M. Pei por encargo del presidente François Mitterrand, como parte de una remodelación del museo terminada en 1989. En su momento fue muy polémica: mucha gente consideraba una falta de respeto poner una estructura de vidrio y metal tan moderna en el patio de un palacio clásico del siglo dieciséis. Contrario a un mito bastante extendido, la pirámide no tiene 666 paneles de vidrio sino 673. De noche, iluminada desde dentro, se ve prácticamente flotando sobre el patio, y funciona como la entrada principal al museo más visitado del mundo."},
+    {id:12,time:"20:15",dur:"20 min",name:"Catedral de Notre-Dame",note:"Reabrió en diciembre de 2024 tras el incendio de 2019.",lat:48.853,lng:2.3499,hp:false,transport:"A pie siguiendo el Sena por el Quai du Louvre y cruzando por el Pont Neuf hasta la Île de la Cité, unos 20 minutos.",audio:"Notre-Dame se empezó a construir en 1163 y tardó casi doscientos años en terminarse, uno de los primeros grandes ejemplos del gótico francés, con sus arbotantes exteriores que permitieron levantar muros más altos y delgados con enormes vitrales. La aguja original se retiró en el siglo diecinueve por deterioro y Eugène Viollet-le-Duc diseñó la que existió hasta 2019, cuando un incendio durante una restauración destruyó el techo y esa misma aguja frente a los ojos de todo el mundo. La reconstrucción, financiada en gran parte por donaciones internacionales, reabrió sus puertas en diciembre de 2024, apenas cinco años después, un plazo que muchos consideraban imposible. De noche, iluminada y reflejada en el Sena desde el Pont de l'Archevêché, es de las postales más bonitas de todo París."},
+    {id:13,time:"20:50",dur:"90 min",name:"Cena en Le Coupe-Chou",note:"Reserven con anticipación. Restaurante romántico en un edificio del siglo catorce, en el Barrio Latino.",lat:48.8485,lng:2.3463,hp:false,transport:"A pie por el Barrio Latino, unos 10-12 minutos desde Notre-Dame.",audio:"Le Coupe-Chou ocupa un conjunto de casas que datan de los siglos catorce y diecisiete, con techos bajos, vigas de madera y velas en cada mesa, en una calle empedrada muy cerca de la Sorbona y el Panteón. El menú cambia con frecuencia según temporada, pero mantiene siempre ese ambiente íntimo y algo teatral que lo ha vuelto una de las cenas más recordadas por quienes visitan el Barrio Latino, sobre todo en fechas especiales."},
+    {id:14,time:"22:30",dur:"—",name:"Regreso al hotel",note:"Descanso antes de la salida temprana.",lat:48.8562,lng:2.3052,hp:false,transport:"RER C directo desde Saint-Michel Notre-Dame hasta Champ de Mars-Tour Eiffel, unos 20-25 minutos; o taxi/Uber, 15-20 minutos.",audio:"Fin del recorrido de la noche. Toca dormir, porque hay que despertar temprano para desayunar y salir hacia el aeropuerto."}
+  ],
+  manana:[
+    {id:15,time:"06:45",dur:"15 min",name:"Despertar",note:"Alistarse antes de bajar a desayunar.",lat:48.8562,lng:2.3052,hp:false,transport:"Punto de partida hacia el aeropuerto.",audio:"Con un vuelo internacional a las once de la mañana y desayuno incluido en el hotel, conviene estar listos para bajar apenas abra el comedor."},
+    {id:16,time:"07:00",dur:"20 min",name:"Desayuno en el hotel",note:"El buffet abre justo a las 7:00; conviene ser de los primeros en bajar.",lat:48.8562,lng:2.3052,hp:false,transport:"En el propio hotel.",audio:"El margen es ajustado, así que este desayuno es más de servirse rápido que de tomarlo con calma; aun así vale la pena sentarse unos minutos antes de la última salida del viaje."},
+    {id:17,time:"07:20",dur:"—",name:"Check-out y salida hacia CDG",note:"Vuelo a Nairobi a las 11:00.",lat:49.0097,lng:2.5479,hp:false,transport:"RER C + RER B (o taxi/Uber directo), unos 50-60 minutos.",audio:"A esta hora el tráfico y el metro suelen estar más despejados que el día anterior, así que el trayecto hacia Charles de Gaulle debería ser bastante predecible."},
+    {id:18,time:"08:15",dur:"—",name:"Llegada a CDG",note:"Margen de aproximadamente 3 horas para el vuelo internacional a Nairobi.",lat:49.0097,lng:2.5479,hp:false,transport:"—",audio:"Tres horas es un margen cómodo para un vuelo intercontinental: entre facturación, control de seguridad y a veces un control adicional de pasaporte para vuelos fuera del espacio Schengen, ese tiempo se agradece. Buen vuelo hacia Nairobi."}
+  ],
+  info:[
+    {title:"Emergencias",planb:false,items:["<b>112</b> — número de emergencia único en toda la Unión Europea (policía, ambulancia, bomberos).","<b>15</b> — SAMU, urgencias médicas; <b>17</b> — policía directo.","Sección Consular, Embajada de México en Francia: 4 Rue Notre-Dame-des-Victoires, 75002 París · tel. +33 1 42 86 56 20; línea de emergencia para mexicanos: +33 6 13 53 55 74."]},
+    {title:"Cómo pagar el transporte",planb:false,items:["A diferencia de Londres, el metro y el RER de París todavía NO aceptan tarjeta bancaria sin contacto de forma directa (solo algunas líneas empezarán a aceptarla a partir de mediados-finales de 2026); van a necesitar comprar una tarjeta Navigo Easy (2€, recargable) y cargarle boletos individuales, o usar la app oficial Île-de-France Mobilités para boletos digitales.","Los autobuses de París sí aceptan tarjeta bancaria sin contacto directamente desde noviembre de 2025.","Un boleto sencillo de metro/RER dentro de París ronda los 2.50-2.55€; no hay tope diario automático como en Londres."]},
+    {title:"Equipaje la última mañana",planb:false,items:["Como no hay bloque de turismo la mañana siguiente, lo más simple es dejar todo empacado la noche anterior y salir directo del hotel hacia el aeropuerto.","Si por algún motivo necesitan guardar equipaje unas horas, pregunten en recepción; la mayoría de los hoteles en París lo hacen sin costo."]},
+    {title:"Clima y qué llevar",planb:false,items:["Principios de noviembre en París suele ser frío (5-12°C) y con probabilidad alta de lluvia; conviene revisar el pronóstico un par de días antes.","Buena regla general: abrigo, bufanda, capas debajo, y zapatos cómodos para los adoquines de Trocadéro y el Palais-Royal.","Los enchufes en Francia son tipo E (distintos a México y también distintos a los del Reino Unido); lleven adaptador."]},
+    {title:"Plan B — si van atrasados",planb:true,items:["Lo primero que se puede recortar es el tramo Palais Garnier → Jardín del Palais-Royal → Pirámide del Louvre; el jardín del Palais-Royal de cualquier forma cierra a las 20:30, así que si van tarde ya no va a estar disponible.","Lo esencial que conviene proteger es la Torre Eiffel y el Trocadéro al atardecer (por la luz), Notre-Dame de noche, y la cena en Le Coupe-Chou; todo lo demás es flexible.","Si el tiempo se les va en el trayecto desde el aeropuerto, prioricen dejar las maletas en el hotel y salir directo a Trocadéro para alcanzar el atardecer, dejando Champ de Mars para después."]},
+    {title:"Plan B — si llueve",planb:true,items:["Cerca del Palais-Royal hay pasajes cubiertos del siglo diecinueve, como la Galerie Vivienne, perfectos para resguardarse sin perder el ambiente parisino.","El atrio bajo la Pirámide del Louvre es un buen refugio techado si llueve fuerte justo en esa parada.","Si llueve toda la tarde, el paseo por los Campos Elíseos se puede acortar tomando el metro directo de Charles de Gaulle–Étoile a Concorde (línea 1, una sola parada) en vez de caminar la avenida completa."]}
+  ]
+}
+};
 
-const stopsManana = [
-  {id:14,block:'manana',time:'06:30',dur:'10 min',name:'Check-out y desayuno rápido',note:'Salida del hotel.',lat:51.5013,lng:-0.1197,hp:false,
-    transport:'Punto de partida del segundo bloque.',
-    audio:"Última mañana en Londres antes de tomar el tren hacia el aeropuerto. Conviene llevar el equipaje ligero de mano, porque el resto del recorrido es caminando y en metro."},
-  {id:15,block:'manana',time:'06:55',dur:'20 min',name:"King's Cross — Andén 9¾",note:'Carrito y tienda de Harry Potter.',lat:51.5320,lng:-0.1233,hp:true,
-    transport:'Metro, línea Northern (dirección norte) desde Waterloo hasta King\'s Cross St Pancras, 4 paradas, unos 10-12 minutos.',
-    audio:"La estación de King's Cross, diseñada por Lewis Cubitt, abrió en 1852 con sus dos naves gemelas de tren que hoy siguen siendo reconocibles en la fachada. El nombre de la zona viene de un monumento a Jorge IV que existió en este cruce de calles décadas antes de construirse la estación, y que se derribó por impopular en 1845. Los andenes nueve y diez, en la vida real bastante ordinarios, inspiraron a J. K. Rowling el andén nueve y tres cuartos por el que los magos viajan a Hogwarts; según ha contado, eligió el nombre de la estación sobre todo porque le gustaba cómo sonaba. Desde los años noventa hay un carrito medio hundido en la pared para tomarse la foto, y junto a él una tienda oficial de la saga. A un costado está St Pancras, con su fachada victoriana de ladrillo rojo y el antiguo hotel Midland Grand; desde 2007 esa misma estación es la terminal de los trenes Eurostar que cruzan por el túnel del Canal de la Mancha hacia París y Bruselas."},
-  {id:16,block:'manana',time:'07:25',dur:'15 min',name:'Covent Garden',note:'Plaza y mercado.',lat:51.5117,lng:-0.1240,hp:false,
-    transport:'Metro, línea Piccadilly (dirección Heathrow) desde King\'s Cross St Pancras, 3 paradas, unos 7 minutos. Esta misma línea los llevará después directo al aeropuerto.',
-    audio:"El nombre Covent Garden viene de convent garden, porque estas tierras pertenecían a los monjes de la Abadía de Westminster. En 1630 el arquitecto Inigo Jones trazó aquí la primera plaza planificada de Londres, inspirada en las plazas italianas que había visto durante sus viajes. Con el tiempo se instaló un mercado de frutas y verduras que creció tanto que terminó mudándose en 1974 a Nine Elms por falta de espacio; el edificio de mercado se conservó y hoy alberga tiendas y puestos bajo el mismo techo de hierro y vidrio del siglo diecinueve. La Royal Opera House, fundada en 1732, está a un costado, y desde los años ochenta la plaza tiene artistas callejeros con licencia oficial para actuar, una tradición de teatro callejero que en Inglaterra se documenta en esta misma plaza desde el siglo diecisiete, con los primeros espectáculos de títeres registrados en el país. Ahí cerca también está el Museo del Transporte de Londres, con vagones y autobuses históricos del metro más antiguo del mundo."},
-  {id:17,block:'manana',time:'07:40',dur:'5 min',name:'Australia House',note:'Fachada usada como Gringotts.',lat:51.5128,lng:-0.1173,hp:true,
-    transport:'A pie por el Strand, unos 5 minutos.',
-    audio:"Australia House se inauguró en 1918 por el rey Jorge V y es la misión diplomática australiana más antigua en funcionamiento continuo del mundo. Su construcción tomó ocho años, retrasada en parte por la Primera Guerra Mundial, y su fachada de estilo clásico está decorada con esculturas que representan a los distintos estados australianos. Buena parte del mármol de su interior se trajo desde Australia, algo poco común para un edificio de esa época en Londres. Su gran vestíbulo, el Exhibition Hall, con columnas y candelabros imponentes, se usó como interior y exterior del banco mágico Gringotts en Harry Potter y la Piedra Filosofal, la primera película de la saga, y sigue siendo de las locaciones de Harry Potter más visitadas de Londres precisamente porque, a diferencia de otras, se puede ver desde la calle sin pagar entrada."},
-  {id:18,block:'manana',time:'07:45',dur:'10 min',name:'Trafalgar Square',note:'Columna de Nelson.',lat:51.5080,lng:-0.1281,hp:false,
-    transport:'A pie, unos 5 minutos.',
-    audio:"Trafalgar Square se trazó en la década de 1840 para conmemorar la victoria naval británica de 1805 sobre las flotas combinadas de Francia y España, en la que Napoleón perdió cualquier posibilidad de invadir Inglaterra por mar. La columna central, de unos 52 metros, honra al almirante Horatio Nelson, quien murió durante esa batalla; los cuatro leones de bronce en su base se añadieron después, en 1867, fundidos en parte con cañones capturados al enemigo. La National Gallery, fundada en 1824, ocupa todo el costado norte de la plaza. Durante buena parte del siglo veinte la plaza fue famosa por sus cientos de palomas, que los vendedores locales invitaban a alimentar, hasta que en 2003 se prohibió por el daño que las heces causaban a la piedra de los monumentos. Desde 1999 uno de sus cuatro pedestales, conocido como el Cuarto Pedestal, se reserva para encargos rotativos de arte contemporáneo en lugar de una estatua fija, algo poco común en un espacio tan histórico."},
-  {id:19,block:'manana',time:'07:55',dur:'15 min',name:'Whitehall y Downing Street',note:'Sede del gobierno.',lat:51.5034,lng:-0.1276,hp:false,
-    transport:'A pie hacia el sur por Whitehall, unos 5-8 minutos.',
-    audio:"Whitehall toma su nombre del antiguo Palacio de Whitehall, que llegó a ser el más grande de Europa, con más de mil quinientas habitaciones, hasta que se incendió casi por completo en 1698; sólo sobrevivió la Banqueting House, donde por cierto fue ejecutado el rey Carlos I en 1649, en un cadalso construido justo frente al edificio cuyo techo él mismo había mandado decorar con pinturas de Rubens años antes. Downing Street se construyó en la década de 1680 y desde 1735 el número diez es la residencia oficial del primer ministro, un regalo del rey Jorge II a Robert Walpole, considerado el primer primer ministro británico aunque el título no existía formalmente en su época. Las rejas que hoy cierran el acceso a la calle se instalaron apenas en 1989, por motivos de seguridad, así que ya no se puede caminar frente a la puerta como antes. Un poco más adelante está el Cenotafio, el monumento nacional a los caídos en las dos guerras mundiales, donde cada noviembre se realiza la ceremonia oficial de recuerdo."},
-  {id:20,block:'manana',time:'08:10',dur:'10 min',name:'Leicester Square',note:'Zona de cines y teatros.',lat:51.5104,lng:-0.1300,hp:false,
-    transport:'A pie de regreso hacia el norte, unos 12-15 minutos.',
-    audio:"Leicester Square se trazó como plaza residencial en la década de 1670 y tomó su nombre de una mansión cercana, Leicester House. En el siglo dieciocho tuvo cierta fama como escenario de duelos entre caballeros; con el tiempo se convirtió en el centro de cines y teatros de Londres, y hoy es sede tradicional de los estrenos más importantes del cine británico, con alfombras rojas frente a sus salas Art Decó. En sus jardines hay estatuas dedicadas a William Shakespeare y a Charlie Chaplin, y en una esquina está la famosa caseta de TKTS, donde se venden boletos de teatro del West End con descuento el mismo día de la función."},
-  {id:21,block:'manana',time:'08:25',dur:'15 min',name:'Piccadilly Circus',note:'Último punto antes del tren al aeropuerto.',lat:51.5100,lng:-0.1346,hp:false,
-    transport:'A pie, unos 5-7 minutos. De aquí sale el metro directo a Heathrow.',
-    audio:"El nombre Piccadilly viene de los picadils, unos cuellos rígidos de moda que un sastre llamado Robert Baker vendía cerca de aquí en el siglo diecisiete, y que le dieron tanto dinero que su casa terminó apodándose burlonamente Piccadilly Hall. El cruce actual lo trazó el arquitecto John Nash en 1819 como parte de una reforma urbana mayor que también incluyó Regent Street. La estatua alada en el centro, conocida popularmente como Eros, en realidad representa a su hermano Anteros, el Ángel del Amor Filantrópico o desinteresado, y se instaló en 1893 en memoria del filántropo conde de Shaftesbury, conocido por impulsar leyes que protegían a niños trabajadores; fue una de las primeras estatuas del mundo fundidas en aluminio, un material entonces novedoso y caro. Los enormes anuncios luminosos que rodean la plaza llevan iluminándola desde 1908, entre los primeros del mundo en usar ese tipo de publicidad a gran escala, y hoy son enteramente digitales."},
-  {id:22,block:'manana',time:'08:45',dur:'50-60 min',name:'Tren a Heathrow',note:'Llegada con margen para el vuelo de las 12:45.',lat:51.4700,lng:-0.4543,hp:false,
-    transport:'Metro, línea Piccadilly (dirección Heathrow) desde Piccadilly Circus, directo sin transbordos hasta la terminal correspondiente, unos 50-60 minutos según la terminal.',
-    audio:"La línea Piccadilly conecta el centro de Londres con Heathrow desde 1977 y es, junto con el Heathrow Express, la forma más económica de llegar al aeropuerto sin transbordos desde el West End; el tren se detiene en varias terminales, así que conviene confirmar en Google Maps o en las pantallas de la estación cuál corresponde a su vuelo antes de subir."},
-];
 
-const allStops = stops.concat(stopsManana);
+let currentCity = 'ldn';
+const visitedByCity = { ldn:{}, par:{} };
 
-const visited = {};
+function esc(s){ return s; }
 
-function renderTimeline(list, containerId){
-  const ol = document.getElementById(containerId);
-  ol.innerHTML = list.map(s => `
-    <li id="li-${s.id}">
-      <div class="check-wrap">
-        <input type="checkbox" data-id="${s.id}" ${visited[s.id] ? 'checked' : ''}>
-        <div class="check-body">
-          <span class="stop-time">${s.time}</span><span class="stop-dur">${s.dur}</span>
-          <div class="stop-name">${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
-          <p class="stop-note">${s.note}</p>
-          <p class="transport-line">${s.transport}</p>
-        </div>
-      </div>
-    </li>`).join('');
-  ol.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
-    cb.addEventListener('change', ()=>{
-      const id = cb.dataset.id;
-      visited[id] = cb.checked;
-      document.getElementById('li-'+id).classList.toggle('visited', cb.checked);
-      updateProgress();
+function renderAll(){
+  const c = CITIES[currentCity];
+
+  // city switch buttons
+  const sw = document.getElementById('city-switch');
+  sw.innerHTML = Object.values(CITIES).map(city =>
+    `<button data-city="${city.key}" class="${city.key===currentCity?'active':''}">${city.label}</button>`
+  ).join('');
+  sw.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentCity = btn.dataset.city;
+      renderAll();
     });
   });
-}
-renderTimeline(stops, 'list-noche');
-renderTimeline(stopsManana, 'list-manana');
 
-function updateProgress(){
-  [['noche', stops], ['manana', stopsManana]].forEach(([key, list])=>{
-    const total = list.length;
-    const done = list.filter(s=>visited[s.id]).length;
-    const pct = total ? Math.round(done/total*100) : 0;
-    document.getElementById('progress-'+key).style.width = pct+'%';
-    document.getElementById('progress-'+key+'-label').textContent = `${done}/${total} visitadas`;
+  document.getElementById('city-title').textContent = c.title;
+  document.getElementById('city-sub').textContent = c.subtitle;
+  document.getElementById('city-journey').innerHTML = c.journey.map((p,i)=>{
+    const bar = i < c.journey.length-1 ? '<div class="bar"></div>' : '';
+    return `<div class="pt"><div class="t">${p.t}</div><div class="l">${p.l}</div></div>${bar}`;
+  }).join('');
+
+  document.getElementById('b1-label').textContent = c.block1_label;
+  document.getElementById('b1-range').textContent = c.block1_range;
+  document.getElementById('b2-label').textContent = c.block2_label;
+  document.getElementById('b2-range').textContent = c.block2_range;
+  document.getElementById('m1-label').textContent = c.map1_label;
+  document.getElementById('m2-label').textContent = c.map2_label;
+  document.getElementById('a1-label').textContent = c.block1_label.split(' de llegada')[0].split(' en ')[0];
+  document.getElementById('a2-label').textContent = c.map2_label;
+
+  const visited = visitedByCity[currentCity];
+
+  function renderTimeline(list, containerId){
+    const ol = document.getElementById(containerId);
+    ol.innerHTML = list.map(s => `
+      <li id="li-${s.id}">
+        <div class="check-wrap">
+          <input type="checkbox" data-id="${s.id}" ${visited[s.id] ? 'checked' : ''}>
+          <div class="check-body">
+            <span class="stop-time">${s.time}</span><span class="stop-dur">${s.dur}</span>
+            <div class="stop-name">${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+            <p class="stop-note">${s.note}</p>
+            <p class="transport-line">${s.transport}</p>
+          </div>
+        </div>
+      </li>`).join('');
+    ol.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const id = cb.dataset.id;
+        visited[id] = cb.checked;
+        document.getElementById('li-'+id).classList.toggle('visited', cb.checked);
+        updateProgress();
+      });
+    });
+  }
+  renderTimeline(c.noche, 'list-noche');
+  renderTimeline(c.manana, 'list-manana');
+
+  function updateProgress(){
+    [['noche', c.noche], ['manana', c.manana]].forEach(([key, list])=>{
+      const total = list.length;
+      const done = list.filter(s=>visited[s.id]).length;
+      const pct = total ? Math.round(done/total*100) : 0;
+      document.getElementById('progress-'+key).style.width = pct+'%';
+      document.getElementById('progress-'+key+'-label').textContent = `${done}/${total} visitadas`;
+    });
+  }
+  updateProgress();
+
+  function parseTime(t){
+    const [h,m] = t.split(':').map(Number);
+    return h*60+m;
+  }
+  function updateNowBanner(){
+    const now = new Date();
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const nocheStart = parseTime(c.block1_start), nocheEnd = parseTime(c.block1_end);
+    const mananaStart = parseTime(c.block2_start), mananaEnd = parseTime(c.block2_end);
+    document.querySelectorAll('ol.timeline li').forEach(li=>li.classList.remove('current'));
+    const banner = document.getElementById('now-banner');
+    let list = null;
+    if(nowMin >= nocheStart && nowMin <= nocheEnd){ list = c.noche; }
+    else if(nowMin >= mananaStart && nowMin <= mananaEnd){ list = c.manana; }
+
+    if(!list){
+      if(nowMin < nocheStart) banner.innerHTML = `<b>Aún no arranca</b>${c.not_started}`;
+      else if(nowMin > nocheEnd && nowMin < mananaStart) banner.innerHTML = `<b>Descansando</b>${c.resting}`;
+      else banner.innerHTML = `<b>Itinerario terminado</b>${c.finished}`;
+      return;
+    }
+    let current = null, next = null;
+    for(let i=0;i<list.length;i++){
+      if(parseTime(list[i].time) <= nowMin){ current = list[i]; next = list[i+1] || null; }
+    }
+    if(!current){ current = null; next = list[0]; }
+    if(current){
+      const el = document.getElementById('li-'+current.id);
+      if(el) el.classList.add('current');
+    }
+    banner.innerHTML = current
+      ? `<b>Ahora: ${current.name}</b>${next ? `Siguiente: ${next.name} a las ${next.time}` : 'Última parada de este bloque.'}`
+      : `<b>Siguiente: ${next.name}</b>A las ${next.time}.`;
+  }
+  updateNowBanner();
+  if(window.__nowInterval) clearInterval(window.__nowInterval);
+  window.__nowInterval = setInterval(updateNowBanner, 30000);
+
+  function travelMode(s){ return /Metro|Autob/i.test(s.transport) ? 'transit' : 'walking'; }
+
+  function renderMapLegs(list, containerId, prevLast){
+    const el = document.getElementById(containerId);
+    el.innerHTML = list.map((s,i)=>{
+      const prev = i===0 ? prevLast : list[i-1];
+      const embedSrc = `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=16&output=embed`;
+      let dirBtn = '';
+      if(prev){
+        const mode = travelMode(s);
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${prev.lat},${prev.lng}&destination=${s.lat},${s.lng}&travelmode=${mode}`;
+        dirBtn = `<a class="leg-btn" href="${url}" target="_blank" rel="noopener">Abrir ruta desde "${prev.name.split(' — ')[0].split(' (')[0]}" →</a>`;
+      }
+      return `
+      <div class="leg-card">
+        <div class="leg-top">
+          <div class="leg-name">${i+1}. ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+          <div class="leg-time">${s.time}</div>
+        </div>
+        <div class="leg-transport"><b>Cómo llegar:</b> ${s.transport}</div>
+        <iframe class="leg-map" src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        ${dirBtn}
+      </div>`;
+    }).join('');
+  }
+  renderMapLegs(c.noche, 'map-noche', null);
+  renderMapLegs(c.manana, 'map-manana', c.noche[c.noche.length-1]);
+
+  function renderAudio(list, containerId){
+    const el = document.getElementById(containerId);
+    el.innerHTML = list.map(s => `
+      <div class="audio-item" data-id="${s.id}">
+        <div class="audio-head">
+          <div class="audio-title">${s.time} · ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
+          <button class="play-btn" data-id="${s.id}">&#9654;</button>
+        </div>
+        <p class="audio-text">${s.audio}</p>
+      </div>`).join('');
+  }
+  renderAudio(c.noche, 'audio-noche');
+  renderAudio(c.manana, 'audio-manana');
+
+  const allStops = c.noche.concat(c.manana);
+  document.querySelectorAll('.play-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const isPlaying = btn.classList.contains('playing');
+      speechSynthesis.cancel();
+      document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+      if(isPlaying) return;
+      const stop = allStops.find(s=>s.id == btn.dataset.id);
+      btn.classList.add('playing'); btn.innerHTML = '&#10074;&#10074;';
+      speak(stop.audio, ()=>{ btn.classList.remove('playing'); btn.innerHTML='&#9654;'; });
+    });
   });
-}
-updateProgress();
+  document.querySelectorAll('.all-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      speechSynthesis.cancel();
+      document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+      const list = btn.dataset.block === 'noche' ? c.noche : c.manana;
+      let i = 0;
+      function next(){
+        if(i >= list.length) return;
+        const s = list[i];
+        const pb = document.querySelector(`.play-btn[data-id="${s.id}"]`);
+        if(pb){ pb.classList.add('playing'); pb.innerHTML='&#10074;&#10074;'; }
+        speak(s.audio, ()=>{
+          if(pb){ pb.classList.remove('playing'); pb.innerHTML='&#9654;'; }
+          i++; next();
+        });
+      }
+      next();
+    };
+  });
 
-function parseTime(t){
-  const [h,m] = t.split(':').map(Number);
-  return h*60+m;
+  // info panel
+  const infoEl = document.getElementById('info-content');
+  infoEl.innerHTML = c.info.map(block => `
+    <div class="info-block${block.planb ? ' plan-b' : ''}">
+      <h3>${block.title}</h3>
+      <ul>${block.items.map(it=>`<li>${it}</li>`).join('')}</ul>
+    </div>`).join('');
 }
-function updateNowBanner(){
-  const now = new Date();
-  const nowMin = now.getHours()*60 + now.getMinutes();
-  const nocheStart = parseTime('17:30'), nocheEnd = parseTime('23:20');
-  const mananaStart = parseTime('06:30'), mananaEnd = parseTime('08:45');
-  document.querySelectorAll('ol.timeline li').forEach(li=>li.classList.remove('current'));
-  const banner = document.getElementById('now-banner');
-  let list = null;
-  if(nowMin >= nocheStart && nowMin <= nocheEnd){ list = stops; }
-  else if(nowMin >= mananaStart && nowMin <= mananaEnd){ list = stopsManana; }
-
-  if(!list){
-    if(nowMin < nocheStart) banner.innerHTML = '<b>Aún no arranca</b>El bloque de tarde/noche empieza a las 17:30.';
-    else if(nowMin > nocheEnd && nowMin < mananaStart) banner.innerHTML = '<b>Descansando</b>El itinerario continúa mañana a las 06:30.';
-    else banner.innerHTML = '<b>Itinerario terminado</b>Buen vuelo de regreso a México.';
-    return;
-  }
-  let current = null, next = null;
-  for(let i=0;i<list.length;i++){
-    if(parseTime(list[i].time) <= nowMin){ current = list[i]; next = list[i+1] || null; }
-  }
-  if(!current){ current = null; next = list[0]; }
-  if(current){
-    const el = document.getElementById('li-'+current.id);
-    if(el) el.classList.add('current');
-  }
-  banner.innerHTML = current
-    ? `<b>Ahora: ${current.name}</b>${next ? `Siguiente: ${next.name} a las ${next.time}` : 'Última parada de este bloque.'}`
-    : `<b>Siguiente: ${next.name}</b>A las ${next.time}.`;
-}
-updateNowBanner();
-setInterval(updateNowBanner, 30000);
 
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -352,34 +432,6 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
     document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
   });
 });
-
-function travelMode(s){ return /Metro|Autob/i.test(s.transport) ? 'transit' : 'walking'; }
-
-function renderMapLegs(list, containerId){
-  const el = document.getElementById(containerId);
-  el.innerHTML = list.map((s,i)=>{
-    const prev = i===0 ? (list===stops ? null : stops[stops.length-1]) : list[i-1];
-    const embedSrc = `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=16&output=embed`;
-    let dirBtn = '';
-    if(prev){
-      const mode = travelMode(s);
-      const url = `https://www.google.com/maps/dir/?api=1&origin=${prev.lat},${prev.lng}&destination=${s.lat},${s.lng}&travelmode=${mode}`;
-      dirBtn = `<a class="leg-btn" href="${url}" target="_blank" rel="noopener">Abrir ruta desde "${prev.name.split(' — ')[0].split(' (')[0]}" →</a>`;
-    }
-    return `
-    <div class="leg-card">
-      <div class="leg-top">
-        <div class="leg-name">${i+1}. ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
-        <div class="leg-time">${s.time}</div>
-      </div>
-      <div class="leg-transport"><b>Cómo llegar:</b> ${s.transport}</div>
-      <iframe class="leg-map" src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      ${dirBtn}
-    </div>`;
-  }).join('');
-}
-renderMapLegs(stops, 'map-noche');
-renderMapLegs(stopsManana, 'map-manana');
 
 let voices = [];
 function loadVoices(){
@@ -400,50 +452,8 @@ function speak(text, onend){
   speechSynthesis.speak(u);
   return u;
 }
-function renderAudio(list, containerId){
-  const el = document.getElementById(containerId);
-  el.innerHTML = list.map(s => `
-    <div class="audio-item" data-id="${s.id}">
-      <div class="audio-head">
-        <div class="audio-title">${s.time} · ${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
-        <button class="play-btn" data-id="${s.id}">&#9654;</button>
-      </div>
-      <p class="audio-text">${s.audio}</p>
-    </div>`).join('');
-}
-renderAudio(stops, 'audio-noche');
-renderAudio(stopsManana, 'audio-manana');
 
-document.querySelectorAll('.play-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const isPlaying = btn.classList.contains('playing');
-    speechSynthesis.cancel();
-    document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
-    if(isPlaying) return;
-    const stop = allStops.find(s=>s.id == btn.dataset.id);
-    btn.classList.add('playing'); btn.innerHTML = '&#10074;&#10074;';
-    speak(stop.audio, ()=>{ btn.classList.remove('playing'); btn.innerHTML='&#9654;'; });
-  });
-});
-document.querySelectorAll('.all-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    speechSynthesis.cancel();
-    document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
-    const list = btn.dataset.block === 'noche' ? stops : stopsManana;
-    let i = 0;
-    function next(){
-      if(i >= list.length) return;
-      const s = list[i];
-      const pb = document.querySelector(`.play-btn[data-id="${s.id}"]`);
-      if(pb){ pb.classList.add('playing'); pb.innerHTML='&#10074;&#10074;'; }
-      speak(s.audio, ()=>{
-        if(pb){ pb.classList.remove('playing'); pb.innerHTML='&#9654;'; }
-        i++; next();
-      });
-    }
-    next();
-  });
-});
+renderAll();
 </script>
 </body>
 </html>
