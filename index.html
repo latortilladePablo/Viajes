@@ -55,6 +55,9 @@
   .leg-transport b{font-weight:600;}
   .leg-map{width:100%;height:150px;border:0;border-radius:2px;margin-top:8px;display:block;}
   .leg-btn{display:inline-block;margin-top:10px;font-size:.8rem;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--ink);padding:8px 12px;border-radius:2px;}
+  .tl-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .tl-btn{display:inline-flex;align-items:center;gap:6px;font-family:'Work Sans',sans-serif;font-size:.78rem;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--ink);background:transparent;padding:7px 11px;border-radius:2px;cursor:pointer;line-height:1.2;}
+  .tl-btn.playing{background:var(--brass);border-color:var(--brass);color:var(--paper);}
   .audio-note{font-size:.82rem;opacity:.68;margin:0 0 16px;line-height:1.45;}
   .audio-item{border-bottom:1px solid var(--paper-line);padding:14px 0;}
   .audio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -224,7 +227,7 @@ const CITIES = {
     {id:1,time:"09:00",dur:"20 min",name:"Salida del resort — Bahiazul Resort",note:"El resort está en Corralejo, así que este día empieza y termina cerca de casa.",lat:28.7087,lng:-13.8722,hp:false,transport:"Punto de partida.",audio:"Bahiazul Resort está en Corralejo, en el extremo norte de Fuerteventura, un pueblo que hasta los años sesenta era apenas una aldea de pescadores y que hoy es el centro turístico más grande del norte de la isla. Justo por eso, este primer día de exploración pueden hacerlo casi sin subirse mucho tiempo al coche."},
     {id:2,time:"09:20",dur:"90 min",name:"Parque Natural de Corralejo (dunas)",note:"Dunas de arena blanca traídas por el viento desde el Sáhara, según la teoría más aceptada.",lat:28.683,lng:-13.8506,hp:false,transport:"En coche desde el resort, unos 10 minutos.",audio:"Las dunas de Corralejo forman un parque natural protegido desde 1982, con casi 2,700 hectáreas de arena que se extienden entre el pueblo y la costa sur de la península. La teoría más aceptada es que buena parte de esta arena tan fina y blanca llegó arrastrada por el viento desde el desierto del Sáhara, a solo cien kilómetros de distancia, aunque también hay arena de origen marino, de conchas y organismos calcáreos triturados durante miles de años. El viento sigue moviendo las dunas todo el tiempo, así que el paisaje nunca es exactamente igual de un año a otro."},
     {id:3,time:"10:50",dur:"60 min",name:"Grandes Playas de Corralejo",note:"Arena blanca y agua turquesa, justo al lado de las dunas.",lat:28.7046,lng:-13.8371,hp:false,transport:"A pie o en coche, 5 minutos, es la continuación de las dunas hacia el norte.",audio:"Las Grandes Playas de Corralejo son parte del mismo parque natural y están consideradas entre las mejores playas de todas las Islas Canarias, con arena casi blanca y aguas de un turquesa muy poco común para el Atlántico. No hay servicios dentro del parque —ni tiendas ni baños— así que conviene llevar agua y protector solar. El viento suele ser constante, lo cual explica por qué en el horizonte casi siempre se ven windsurfistas y kitesurfistas aprovechando la brisa."},
-    {id:4,time:"12:30",dur:"180 min",name:"Isla de Lobos (excursión en barco)",note:"Ferry desde el muelle de Corralejo, unos 25 minutos de trayecto; reserven boleto con antelación.",lat:28.7514,lng:-13.8245,hp:false,transport:"Ferry desde el puerto de Corralejo, unos 25 minutos de travesía.",audio:"Isla de Lobos es un islote deshabitado a un canal muy corto de Fuerteventura, con solo dos kilómotros cuadrados y declarado parque natural. Su nombre viene de las focas monje que abundaban aquí antes de ser cazadas casi hasta la extinción por los primeros navegantes. Hoy la isla se visita solo de día: hay una ruta sencilla hasta la Playa de la Concha, con agua transparente y poco oleaje ideal para nadar, y otra más exigente hasta el cráter de Montaña La Caldera, desde donde se ve Fuerteventura de un lado y Lanzarote del otro. El único restaurante de la isla no siempre abre, así que conviene llevar comida y bastante agua."},
+    {id:4,time:"12:30",dur:"180 min",name:"Isla de Lobos (excursión en barco)",note:"Ferry desde el muelle de Corralejo, unos 25 minutos de trayecto. <br><b>1) Boletos del ferry:</b> <a href=\"https://www.fuertecharter.com/en/excursiones/eco-ferry-to-lobos-island\" style=\"font-weight:600;text-decoration:underline\" target=\"_blank\" rel=\"noopener\">Fuerte Charter — Eco Ferry a Isla de Lobos</a>. <br><b>2) Registro obligatorio de la visita:</b> <a href=\"https://lobospass.com\" style=\"font-weight:600;text-decoration:underline\" target=\"_blank\" rel=\"noopener\">lobospass.com</a>, unos 5 días antes (alrededor del 18 de noviembre). Sin el registro no permiten ir a la isla.",lat:28.7514,lng:-13.8245,hp:false,transport:"Ferry desde el puerto de Corralejo, unos 25 minutos de travesía.",audio:"Isla de Lobos es un islote deshabitado a un canal muy corto de Fuerteventura, con solo dos kilómotros cuadrados y declarado parque natural. Su nombre viene de las focas monje que abundaban aquí antes de ser cazadas casi hasta la extinción por los primeros navegantes. Hoy la isla se visita solo de día: hay una ruta sencilla hasta la Playa de la Concha, con agua transparente y poco oleaje ideal para nadar, y otra más exigente hasta el cráter de Montaña La Caldera, desde donde se ve Fuerteventura de un lado y Lanzarote del otro. El único restaurante de la isla no siempre abre, así que conviene llevar comida y bastante agua."},
     {id:5,time:"16:00",dur:"45 min",name:"Volcán Calderón Hondo",note:"Caminata corta hasta el borde del cráter.",lat:28.7003,lng:-13.92,hp:false,transport:"En coche desde Corralejo, unos 15 minutos, más un camino señalizado a pie.",audio:"El Calderón Hondo es uno de los volcanes más jóvenes y mejor conservados de Fuerteventura, con un cráter de casi 300 metros de diámetro. El sendero hasta el borde es corto y bien marcado, ideal para el final de la tarde: desde arriba, en un día despejado, se alcanza a ver tanto Isla de Lobos como Lanzarote al norte. Está prohibido bajar al interior del cráter para proteger la vegetación, pero caminar todo el borde exterior no toma más de media hora."},
     {id:6,time:"17:00",dur:"20 min",name:"Iglesia de Nuestra Señora del Carmen",note:"La parroquia del pueblo de Corralejo.",lat:28.7424,lng:-13.8673,hp:false,transport:"En coche de regreso hacia el resort, unos 15 minutos.",audio:"La iglesia del centro de Corralejo creció junto con el propio pueblo, de una pequeña capilla de pescadores a la parroquia actual, a medida que el turismo transformó esta zona desde los años sesenta y setenta. No es un monumento histórico como los de Betancuria, pero vale la pena un vistazo rápido antes de cenar en el pueblo o volver al resort a descansar del primer día de excursiones."}
   ]},
@@ -239,7 +242,7 @@ const CITIES = {
     {id:95,time:"—",dur:"—",name:"Mañana libre — playa y piscina del resort",note:"Día pensado para descansar entre excursiones, sobre todo después de Cofete.",lat:28.7087,lng:-13.8722,hp:false,transport:"En el propio resort.",audio:"Después del día más largo de la semana, este es el momento de no manejar nada y simplemente aprovechar la piscina, la playa cercana y la pensión completa del resort."},
     {id:96,time:"—",dur:"—",name:"Opcional: mercadillo y tiendas de Corralejo",note:"El mercadillo de artesanía suele montarse ciertos días de la semana en el paseo marítimo; conviene confirmar el día en recepción.",lat:28.7424,lng:-13.8636,hp:false,transport:"A pie o en coche corto desde el resort.",audio:"Si les queda ganas de moverse un poco, el centro de Corralejo tiene tiendas de artesanía canaria y el mercadillo callejero que se instala algunos días de la semana en el paseo marítimo, buena opción para buscar algún recuerdo sin necesidad de manejar lejos."},
     {id:97,time:"—",dur:"—",name:"Opcional: spa o actividad del resort",note:"Revisen la agenda de actividades y spa del propio Bahiazul.",lat:28.7087,lng:-13.8722,hp:false,transport:"En el propio resort.",audio:"Muchos resorts en Fuerteventura ofrecen tratamientos de spa o actividades ligeras programadas; vale la pena preguntar en recepción qué hay disponible ese día."},
-    {id:98,time:"—",dur:"~3-4 horas",name:"Opcional: tour en quad o buggy por las dunas",note:"Si prefieren algo más activo que un día de playa, es la alternativa clásica de la zona.",lat:28.683,lng:-13.8506,hp:false,transport:"Recogida habitual en Corralejo con la propia empresa del tour.",audio:"Como alternativa a un día totalmente tranquilo, varias empresas en Corralejo ofrecen tours guiados en quad o buggy por las dunas del parque natural y por pistas del interior volcánico cerca de La Oliva, generalmente en grupo y con guía. Conviene reservarlo con un día de anticipación y llevar gafas o algo para cubrirse del polvo."}
+    {id:102,time:"—",dur:"~3-4 horas",name:"Opcional: tour en quad o buggy por las dunas",note:"Si prefieren algo más activo que un día de playa, es la alternativa clásica de la zona.",lat:28.683,lng:-13.8506,hp:false,transport:"Recogida habitual en Corralejo con la propia empresa del tour.",audio:"Como alternativa a un día totalmente tranquilo, varias empresas en Corralejo ofrecen tours guiados en quad o buggy por las dunas del parque natural y por pistas del interior volcánico cerca de La Oliva, generalmente en grupo y con guía. Conviene reservarlo con un día de anticipación y llevar gafas o algo para cubrirse del polvo."}
   ]},
   {key:"d3",label:"Día 3 (26 nov) — Betancuria y el centro",range:"~6.5 horas, paisaje volcánico e histórico",start:"09:00",end:"14:45",stops:[
     {id:21,time:"09:00",dur:"40 min",name:"Salida hacia el centro de la isla",note:"El día más largo en carretera de paisaje volcánico.",lat:28.7087,lng:-13.8722,hp:false,transport:"En coche desde el resort, unos 40-50 minutos hacia el sur-centro.",audio:"Este día cruza el interior volcánico de Fuerteventura, un paisaje mucho más seco y desértico que las playas del norte, con montañas de tonos ocres y muy poca vegetación."},
@@ -273,7 +276,7 @@ const CITIES = {
   info:[
     {title:"Cómo moverse por la isla",planb:false,items:["Necesitan coche de alquiler: no hay transporte público que cubra bien estas rutas, y las distancias son grandes (Corralejo–Cofete son cerca de 100 km).","El camino de tierra hacia Cofete es transitable en coche normal con cuidado, pero muchas rentadoras restringen o anulan el seguro en ese tramo; revisen el contrato antes de ir.","Llenen el tanque antes de salir del norte: hay pocas gasolineras en el centro y sur de la isla."]},
     {title:"Sol, viento y agua",planb:false,items:["El nombre de la isla viene de sus vientos fuertes y constantes; lleven cortavientos ligero incluso en días soleados, sobre todo en el norte y en Sotavento.","El sol de Canarias es más intenso de lo que parece por la brisa constante; protector solar alto y sombrero son casi obligatorios todos los días.","En Isla de Lobos no siempre hay dónde comprar agua o comida; llévenla desde Corralejo."]},
-    {title:"Actividades y reservas",planb:false,items:["Ferry a Isla de Lobos: sale del puerto de Corralejo, hay varias navieras, conviene reservar con uno o dos días de anticipación en temporada alta.","Clases de kitesurf o windsurf en Sotavento / Playa de la Barca: hay varias escuelas certificadas justo en la playa, mejor reservar la clase el día anterior.","Clases de surf en El Cotillo o Playa de la Pared: zona con olas más manejables para principiantes que Cofete o Sotavento.","Villa Winter se puede visitar por dentro (incluyendo el sótano) con una donación pequeña al encargado; no siempre hay alguien, así que es un poco a la suerte."]},
+    {title:"Actividades y reservas",planb:false,items:["<b>Isla de Lobos (Día 1, 23 nov):</b> compren el ferry en <a href=\"https://www.fuertecharter.com/en/excursiones/eco-ferry-to-lobos-island\" style=\"font-weight:600;text-decoration:underline\" target=\"_blank\" rel=\"noopener\">Fuerte Charter</a> y hagan el registro obligatorio en <a href=\"https://lobospass.com\" style=\"font-weight:600;text-decoration:underline\" target=\"_blank\" rel=\"noopener\">lobospass.com</a> unos 5 días antes (alrededor del 18 de noviembre); sin él no dejan entrar a la isla.","Clases de kitesurf o windsurf en Sotavento / Playa de la Barca: hay varias escuelas certificadas justo en la playa, mejor reservar la clase el día anterior.","Clases de surf en El Cotillo o Playa de la Pared: zona con olas más manejables para principiantes que Cofete o Sotavento.","Villa Winter se puede visitar por dentro (incluyendo el sótano) con una donación pequeña al encargado; no siempre hay alguien, así que es un poco a la suerte."]},
     {title:"Más actividades para meter en los días libres",planb:false,items:["<b>Quad o buggy por las dunas y el interior</b>: hay varias empresas en Corralejo que ofrecen tours guiados de medio día por las dunas del parque natural o por las pistas del interior volcánico cerca de La Oliva; conviene reservar con un día de anticipación y llevar gafas o pañuelo para el polvo.","<b>Snorkel</b>: Playa de la Concha en El Cotillo es la mejor opción por lo protegida y transparente que es el agua; también se puede rentar equipo directamente en Isla de Lobos el día de esa excursión. Playa del Matorral en Morro Jable es otra opción tranquila cerca de Cofete.","<b>Buceo certificado</b>: Corralejo tiene varios centros de buceo con salidas en barco a arrecifes y algún pecio cercano; buena visibilidad casi todo el año, aptos para principiantes con bautizo de buceo.","<b>Paseo en camello por las dunas de Corralejo</b>: actividad clásica de la zona, rutas cortas de 30-45 minutos al atardecer; se reserva directamente en los puntos junto al parque natural.","<b>Catamarán o avistamiento de delfines</b>: salidas de medio día desde el puerto de Corralejo hacia el canal frente a Lobos y Lanzarote, con parada para nadar; suele incluir comida a bordo.","<b>Pesca deportiva</b>: salidas en barco desde Corralejo o Morro Jable, de varias horas, con opción de quedarse con la pesca del día."]},
     {title:"Pensión completa en el resort",planb:false,items:["Para el día de Cofete, que es el más largo, pregunten en el resort si pueden preparar un picnic para llevar en lugar de la comida del mediodía.","Los demás días permiten regresar a comer al resort sin problema si prefieren no perder ninguna comida incluida."]},
     {title:"Emergencias",planb:false,items:["<b>112</b> — número de emergencia único en España y toda la Unión Europea.","Fuerteventura pertenece a España, así que para trámites consulares aplica la misma Embajada de México que en la península; para cualquier urgencia real, siempre primero el 112."]},
@@ -324,9 +327,23 @@ function renderAll(){
     <ol class="timeline" id="list-${b.key}" style="--block-color:${colorFor(bi)}"></ol>
   `).join('');
 
-  function renderTimeline(list, containerId){
+  function tlActions(s, prev){
+    let maps = '';
+    const same = prev && prev.lat === s.lat && prev.lng === s.lng;
+    if(prev && !same){
+      const mode = travelMode(s);
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${prev.lat},${prev.lng}&destination=${s.lat},${s.lng}&travelmode=${mode}`;
+      maps = `<a class="tl-btn" href="${url}" target="_blank" rel="noopener">&#128205; Cómo llegar</a>`;
+    } else {
+      const url = `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+      maps = `<a class="tl-btn" href="${url}" target="_blank" rel="noopener">&#128205; Ver en Google Maps</a>`;
+    }
+    const aud = s.audio ? `<button type="button" class="tl-btn tl-audio" data-id="${s.id}">&#9654; Audioguía</button>` : '';
+    return `<div class="tl-actions">${maps}${aud}</div>`;
+  }
+  function renderTimeline(list, containerId, prevLast){
     const ol = document.getElementById(containerId);
-    ol.innerHTML = list.map(s => `
+    ol.innerHTML = list.map((s,i) => `
       <li id="li-${s.id}">
         <div class="check-wrap">
           <input type="checkbox" data-id="${s.id}" ${visited[s.id] ? 'checked' : ''}>
@@ -335,6 +352,7 @@ function renderAll(){
             <div class="stop-name">${s.name}${s.hp ? '<span class="hp-badge">Harry Potter</span>' : ''}</div>
             <p class="stop-note">${s.note}</p>
             <p class="transport-line">${s.transport}</p>
+            ${tlActions(s, i===0 ? prevLast : list[i-1])}
           </div>
         </div>
       </li>`).join('');
@@ -347,7 +365,7 @@ function renderAll(){
       });
     });
   }
-  c.blocks.forEach(b => renderTimeline(b.stops, 'list-'+b.key));
+  c.blocks.forEach((b,bi) => renderTimeline(b.stops, 'list-'+b.key, bi===0 ? null : c.blocks[bi-1].stops[c.blocks[bi-1].stops.length-1]));
 
   function updateProgress(){
     c.blocks.forEach(b=>{
@@ -410,7 +428,7 @@ function renderAll(){
   window.__nowInterval = setInterval(updateNowBanner, 30000);
 
   // ---- Mapa tab ----
-  function travelMode(s){ return /Metro|Autob|coche|En coche|Ferry/i.test(s.transport) ? 'transit' : 'walking'; }
+  function travelMode(s){ const t=(s.transport||'').trim(); if(/^(Metro|Autob|RER|Tren|Ferry)/i.test(t)) return 'transit'; if(/^(En coche|Coche|Taxi|Uber)/i.test(t)) return 'driving'; return 'walking'; }
 
   function renderMapLegs(list, containerId, prevLast){
     const el = document.getElementById(containerId);
@@ -465,31 +483,38 @@ function renderAll(){
   `).join('');
   c.blocks.forEach(b => renderAudio(b.stops, 'audio-'+b.key));
 
-  document.querySelectorAll('.play-btn').forEach(btn=>{
+  function resetPlayers(){
+    document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+    document.querySelectorAll('.tl-audio').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654; Audioguía';});
+  }
+  function setPlaying(id, on){
+    document.querySelectorAll(`.play-btn[data-id="${id}"]`).forEach(b=>{b.classList.toggle('playing', on); b.innerHTML = on ? '&#10074;&#10074;' : '&#9654;';});
+    document.querySelectorAll(`.tl-audio[data-id="${id}"]`).forEach(b=>{b.classList.toggle('playing', on); b.innerHTML = on ? '&#10074;&#10074; Pausar' : '&#9654; Audioguía';});
+  }
+  document.querySelectorAll('.play-btn, .tl-audio').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const isPlaying = btn.classList.contains('playing');
       speechSynthesis.cancel();
-      document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+      resetPlayers();
       if(isPlaying) return;
       const stop = allStops.find(s=>s.id == btn.dataset.id);
-      btn.classList.add('playing'); btn.innerHTML = '&#10074;&#10074;';
-      speak(stop.audio, ()=>{ btn.classList.remove('playing'); btn.innerHTML='&#9654;'; });
+      setPlaying(stop.id, true);
+      speak(stop.audio, ()=>{ setPlaying(stop.id, false); });
     });
   });
   document.querySelectorAll('.all-btn').forEach(btn=>{
     btn.onclick = ()=>{
       speechSynthesis.cancel();
-      document.querySelectorAll('.play-btn').forEach(b=>{b.classList.remove('playing'); b.innerHTML='&#9654;';});
+      resetPlayers();
       const block = c.blocks.find(b=>b.key === btn.dataset.block);
       const list = block.stops;
       let i = 0;
       function next(){
         if(i >= list.length) return;
         const s = list[i];
-        const pb = document.querySelector(`.play-btn[data-id="${s.id}"]`);
-        if(pb){ pb.classList.add('playing'); pb.innerHTML='&#10074;&#10074;'; }
+        setPlaying(s.id, true);
         speak(s.audio, ()=>{
-          if(pb){ pb.classList.remove('playing'); pb.innerHTML='&#9654;'; }
+          setPlaying(s.id, false);
           i++; next();
         });
       }
