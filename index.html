@@ -66,6 +66,10 @@
   .play-btn.playing{background:var(--brass);border-color:var(--brass);color:var(--paper);}
   .audio-text{font-size:.84rem;opacity:.8;line-height:1.55;margin:8px 0 0;max-width:60ch;}
   .all-btn{width:100%;margin:6px 0 22px;padding:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:'Work Sans';font-weight:600;font-size:.88rem;border-radius:2px;cursor:pointer;}
+  .voice-pick{display:flex;align-items:center;gap:10px;margin:0 0 6px;}
+  .voice-pick label{font-size:.8rem;font-weight:600;}
+  .voice-pick select{flex:1;min-width:0;font-family:'Work Sans',sans-serif;font-size:.82rem;padding:8px;border:1px solid var(--ink);background:var(--paper-card);color:var(--ink);border-radius:2px;}
+  .voice-tip{font-size:.74rem;opacity:.65;line-height:1.4;margin:0 0 14px;}
   .voice-warn{font-size:.76rem;color:var(--brick);margin-top:10px;display:none;}
   .now-banner{border:1px solid var(--brass);background:var(--paper-card);border-radius:3px;padding:12px 14px;margin-bottom:18px;font-size:.86rem;line-height:1.4;}
   .now-banner b{font-family:'Fraunces',serif;display:block;font-size:.98rem;margin-bottom:2px;}
@@ -118,6 +122,8 @@
 
   <section class="panel" id="panel-audio">
     <p class="audio-note">La audioguía usa la voz en español del propio teléfono, no requiere descargar nada. Toca el botón de cada parada, o usa "Reproducir bloque completo" para escucharlo seguido mientras caminan.</p>
+    <div class="voice-pick"><label for="voice-select">Voz</label><select id="voice-select"></select></div>
+    <p class="voice-tip" id="voice-tip">La calidad depende del dispositivo. Las mejores suelen ser las que dicen "Natural" (Edge), "Mejorada" o "Premium" (iPhone/Mac) o las de Google (Chrome). Elige otra en la lista si esta suena robótica.</p>
     <div class="voice-warn" id="voice-warn">Tu navegador no encontró una voz en español instalada. El audio saldrá en la voz predeterminada.</div>
     <div id="audio-blocks"></div>
   </section>
@@ -494,7 +500,7 @@ function renderAll(){
   document.querySelectorAll('.play-btn, .tl-audio').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const isPlaying = btn.classList.contains('playing');
-      speechSynthesis.cancel();
+      cancelSpeech();
       resetPlayers();
       if(isPlaying) return;
       const stop = allStops.find(s=>s.id == btn.dataset.id);
@@ -504,7 +510,7 @@ function renderAll(){
   });
   document.querySelectorAll('.all-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      speechSynthesis.cancel();
+      cancelSpeech();
       resetPlayers();
       const block = c.blocks.find(b=>b.key === btn.dataset.block);
       const list = block.stops;
@@ -541,23 +547,79 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
 });
 
 let voices = [];
+let speakGen = 0;
+let chosenVoiceName = null;
+try{ chosenVoiceName = localStorage.getItem('viajes_voice'); }catch(e){}
+function voiceScore(v){
+  const n = (v.name||'').toLowerCase(), l = (v.lang||'').toLowerCase().replace('_','-');
+  if(!l.startsWith('es')) return -100;
+  let sc = 10;
+  if(l==='es-mx') sc += 6; else if(l==='es-us') sc += 5; else if(l==='es-es') sc += 3;
+  if(/natural|neural|online/.test(n)) sc += 30;
+  if(/premium|enhanced|mejorad|siri/.test(n)) sc += 20;
+  if(/google/.test(n)) sc += 12;
+  if(/microsoft/.test(n)) sc += 4;
+  if(/compact|espeak|eloquence|novelty/.test(n)) sc -= 30;
+  return sc;
+}
+function sortedEsVoices(){
+  return voices.filter(v=>voiceScore(v) > -50).sort((a,b)=>voiceScore(b)-voiceScore(a));
+}
 function loadVoices(){
   voices = speechSynthesis.getVoices();
-  const hasEs = voices.some(v=>v.lang.toLowerCase().startsWith('es'));
-  document.getElementById('voice-warn').style.display = hasEs ? 'none' : 'block';
+  const es = sortedEsVoices();
+  document.getElementById('voice-warn').style.display = es.length ? 'none' : 'block';
+  const sel = document.getElementById('voice-select');
+  if(sel){
+    sel.innerHTML = es.map(v=>`<option value="${v.name.replace(/"/g,'&quot;')}">${v.name} (${v.lang})</option>`).join('') || '<option>Voz predeterminada</option>';
+    const keep = chosenVoiceName && es.some(v=>v.name===chosenVoiceName) ? chosenVoiceName : (es[0] && es[0].name);
+    if(keep) sel.value = keep;
+  }
 }
 loadVoices();
 if('onvoiceschanged' in speechSynthesis){ speechSynthesis.onvoiceschanged = loadVoices; }
-function pickVoice(){ return voices.find(v=>v.lang.toLowerCase().startsWith('es')) || voices[0]; }
+(function(){
+  const sel = document.getElementById('voice-select');
+  if(!sel) return;
+  sel.addEventListener('change', ()=>{
+    chosenVoiceName = sel.value;
+    try{ localStorage.setItem('viajes_voice', chosenVoiceName); }catch(e){}
+    cancelSpeech();
+    if(typeof resetPlayers === 'function') resetPlayers();
+    speak('Así suena esta voz en la audioguía.');
+  });
+})();
+function pickVoice(){
+  const es = sortedEsVoices();
+  return es.find(v=>v.name===chosenVoiceName) || es[0] || voices[0];
+}
+function cancelSpeech(){ speakGen++; speechSynthesis.cancel(); }
+function splitText(t){
+  const parts = t.match(/[^.!?;:]+[.!?;:]*\s*/g) || [t];
+  const out = []; let cur = '';
+  for(const p of parts){
+    if((cur + p).length > 180 && cur){ out.push(cur); cur = p; } else cur += p;
+  }
+  if(cur) out.push(cur);
+  return out;
+}
 function speak(text, onend){
-  const u = new SpeechSynthesisUtterance(text);
+  const gen = ++speakGen;
   const v = pickVoice();
-  if(v) u.voice = v;
-  u.lang = v ? v.lang : 'es-ES';
-  u.rate = 0.98;
-  u.onend = onend || null;
-  speechSynthesis.speak(u);
-  return u;
+  const chunks = splitText(text);
+  let i = 0;
+  function next(){
+    if(gen !== speakGen) return;
+    if(i >= chunks.length){ if(onend) onend(); return; }
+    const u = new SpeechSynthesisUtterance(chunks[i++]);
+    if(v) u.voice = v;
+    u.lang = v ? v.lang : 'es-MX';
+    u.rate = 0.95;
+    u.onend = next;
+    u.onerror = (e)=>{ if(gen === speakGen && e.error !== 'interrupted' && e.error !== 'canceled') next(); };
+    speechSynthesis.speak(u);
+  }
+  next();
 }
 
 renderAll();
